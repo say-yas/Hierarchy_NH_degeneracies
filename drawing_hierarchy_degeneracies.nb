@@ -1,0 +1,1767 @@
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[         0,          0]
+NotebookDataLength[     65271,       1766]
+NotebookOptionsPosition[     62615,       1704]
+NotebookOutlinePosition[     63033,       1721]
+CellTagsIndexPosition[     62990,       1718]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[{
+ RowBox[{"Clear", "[", "\"\<Global`*\>\"", "]"}], "\[IndentingNewLine]", 
+ RowBox[{"Needs", "[", "\"\<Combinatorica`\>\"", "]"}]}], "Input",
+ InitializationCell->True,
+ CellChangeTimes->{{3.912332677529853*^9, 3.912332678729145*^9}, {
+   3.913822560067936*^9, 3.913822563882694*^9}, {3.913822960578004*^9, 
+   3.913823010382978*^9}, {3.913823508773582*^9, 3.913823509037566*^9}, {
+   3.956492574468672*^9, 3.956492575007626*^9}, {3.956507690512085*^9, 
+   3.956507691424251*^9}, 3.956582153786345*^9, {3.9565840748414187`*^9, 
+   3.9565840765162077`*^9}},
+ CellLabel->"In[18]:=",ExpressionUUID->"b626188f-e743-4304-82a9-1f43e2c251ee"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{
+    RowBox[{
+    "The", " ", "Source", " ", "notebook", " ", "is", " ", "avilable", " ", 
+     "in", " ", 
+     RowBox[{"https", ":"}]}], "//", 
+    RowBox[{
+     RowBox[{
+      RowBox[{
+       RowBox[{"resources", ".", "wolframcloud", ".", "com"}], "/", 
+       "FunctionRepository"}], "/", "resources"}], "/", 
+     "DominatingIntegerPartitionQ"}]}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"dominationLattice", "[", 
+     RowBox[{"n_", ",", "opts___"}], "]"}], ":=", 
+    RowBox[{
+     RowBox[{"ResourceFunction", "[", "\"\<HasseDiagram\>\"", "]"}], "[", 
+     RowBox[{
+      RowBox[{
+      "ResourceFunction", "[", "\"\<DominatingIntegerPartitionQ\>\"", "]"}], 
+      ",", 
+      RowBox[{"IntegerPartitions", "[", "n", "]"}], ",", "opts", ",", 
+      RowBox[{"VertexShapeFunction", "->", "\"\<Name\>\""}]}], "]"}]}], 
+   "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Partitions", " ", "of", " ", "n", " ", "up", " ", "to", " ", "m", " ", 
+     "integers"}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"dominationsubLatticeuptom", "[", 
+     RowBox[{"n_", ",", "m_", ",", "opts___"}], "]"}], ":=", 
+    RowBox[{
+     RowBox[{"ResourceFunction", "[", "\"\<HasseDiagram\>\"", "]"}], "[", 
+     RowBox[{
+      RowBox[{
+      "ResourceFunction", "[", "\"\<DominatingIntegerPartitionQ\>\"", "]"}], 
+      ",", 
+      RowBox[{"IntegerPartitions", "[", 
+       RowBox[{"n", ",", " ", "m"}], "]"}], ",", "opts", ",", 
+      RowBox[{"VertexShapeFunction", "->", "\"\<Name\>\""}]}], "]"}]}], 
+   "\[IndentingNewLine]"}]}]], "Input",
+ InitializationCell->True,
+ CellChangeTimes->{{3.985639833547736*^9, 3.985639834097022*^9}},
+ CellLabel->"In[20]:=",ExpressionUUID->"6d585ae6-3df1-453e-85b3-d825f46c8902"],
+
+Cell[CellGroupData[{
+
+Cell["Drawing Young\[CloseCurlyQuote]s diagram", "Chapter",
+ CellChangeTimes->{{3.9130870608532467`*^9, 3.913087069173557*^9}, {
+  3.956492532610033*^9, 
+  3.956492540913905*^9}},ExpressionUUID->"1f653e75-070b-494f-85cd-\
+c2f20162c386"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Only", " ", "diagrams", " ", "without", " ", "dominance", " ", 
+  "ordering"}]], "Section",
+ CellChangeTimes->{{3.912337198557682*^9, 3.912337220392774*^9}, 
+   3.9130871365097427`*^9, {3.956432267347662*^9, 3.956432268137594*^9}, {
+   3.956492552738457*^9, 3.956492562041943*^9}, {3.956507705440442*^9, 
+   3.956507717227825*^9}},ExpressionUUID->"99581052-072e-410a-8aed-\
+282d662550e0"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"n", "=", "8"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"IntegerPartitions", "[", "n", "]"}], "\[IndentingNewLine]", 
+ RowBox[{"Multicolumn", "[", 
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{"Grid", "[", 
+      RowBox[{"#", ",", 
+       RowBox[{"Spacings", "->", 
+        RowBox[{"{", 
+         RowBox[{"0", ",", "0"}], "}"}]}]}], "]"}], "&"}], "/@", 
+    RowBox[{"Map", "[", 
+     RowBox[{"Framed", ",", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Tableaux", "[", "n", "]"}], " ", "/.", " ", 
+        RowBox[{"_Integer", "->", "\"\<  \>\""}]}], "//", "Union"}], ",", 
+      RowBox[{"{", "3", "}"}]}], "]"}]}], ",", "8", ",", 
+   RowBox[{"Appearance", "->", "\"\<Horizontal\>\""}]}], "]"}]}], "Input",
+ CellChangeTimes->{{3.956492621651325*^9, 3.956492652454998*^9}, {
+   3.956492741934092*^9, 3.956492755209851*^9}, {3.95649280349553*^9, 
+   3.956492806380348*^9}, {3.956494053785638*^9, 3.956494123422018*^9}, {
+   3.9564955600866547`*^9, 3.956495561522532*^9}, {3.956506787857688*^9, 
+   3.956506793908636*^9}, 3.9565068982964153`*^9, {3.9565069914559717`*^9, 
+   3.956506996085531*^9}, {3.956507877897887*^9, 3.956507896315402*^9}, 
+   3.9565840622378287`*^9},
+ Background->RGBColor[0.87, 0.94, 1],
+ CellLabel->"In[22]:=",ExpressionUUID->"22b64919-188a-40ff-a7cc-025d0ca93d9c"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", "8", "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"7", ",", "1"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"6", ",", "2"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"6", ",", "1", ",", "1"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"5", ",", "3"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"5", ",", "2", ",", "1"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"5", ",", "1", ",", "1", ",", "1"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"4", ",", "4"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"4", ",", "3", ",", "1"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"4", ",", "2", ",", "2"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"4", ",", "2", ",", "1", ",", "1"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"4", ",", "1", ",", "1", ",", "1", ",", "1"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"3", ",", "3", ",", "2"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"3", ",", "3", ",", "1", ",", "1"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"3", ",", "2", ",", "2", ",", "1"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"3", ",", "2", ",", "1", ",", "1", ",", "1"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"3", ",", "1", ",", "1", ",", "1", ",", "1", ",", "1"}], "}"}], 
+   ",", 
+   RowBox[{"{", 
+    RowBox[{"2", ",", "2", ",", "2", ",", "2"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"2", ",", "2", ",", "2", ",", "1", ",", "1"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"2", ",", "2", ",", "1", ",", "1", ",", "1", ",", "1"}], "}"}], 
+   ",", 
+   RowBox[{"{", 
+    RowBox[{"2", ",", "1", ",", "1", ",", "1", ",", "1", ",", "1", ",", "1"}],
+     "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "1", ",", "1", ",", "1", ",", "1", ",", "1", ",", "1", ",", "1", ",", 
+     "1"}], "}"}]}], "}"}]], "Output",
+ CellChangeTimes->{
+  3.956507077018111*^9, 3.956507649105981*^9, 3.956507787993952*^9, {
+   3.956507879313814*^9, 3.956507896998494*^9}, 3.956582169964233*^9, 
+   3.956584101843249*^9, {3.98563980973368*^9, 3.9856398383296843`*^9}},
+ CellLabel->"Out[23]=",ExpressionUUID->"1e342dc3-abf3-4da2-9099-cf5f18e0e27b"],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {
+     TagBox[GridBox[{
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False]}
+       },
+       AutoDelete->False,
+       GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+       
+       GridBoxSpacings->{"Columns" -> {{0}}, "Rows" -> {{0}}}],
+      "Grid"], 
+     TagBox[GridBox[{
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False]},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False]}
+       },
+       AutoDelete->False,
+       GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+       
+       GridBoxSpacings->{"Columns" -> {{0}}, "Rows" -> {{0}}}],
+      "Grid"], 
+     TagBox[GridBox[{
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False]},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], "", ""}
+       },
+       AutoDelete->False,
+       GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+       
+       GridBoxSpacings->{"Columns" -> {{0}}, "Rows" -> {{0}}}],
+      "Grid"], 
+     TagBox[GridBox[{
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False]},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], "", "", "", ""}
+       },
+       AutoDelete->False,
+       GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+       
+       GridBoxSpacings->{"Columns" -> {{0}}, "Rows" -> {{0}}}],
+      "Grid"], 
+     TagBox[GridBox[{
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False]},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], "", "", "", "", "", ""}
+       },
+       AutoDelete->False,
+       GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+       
+       GridBoxSpacings->{"Columns" -> {{0}}, "Rows" -> {{0}}}],
+      "Grid"], 
+     TagBox[GridBox[{
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False]},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False]},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], ""}
+       },
+       AutoDelete->False,
+       GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+       
+       GridBoxSpacings->{"Columns" -> {{0}}, "Rows" -> {{0}}}],
+      "Grid"], 
+     TagBox[GridBox[{
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False]},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], "", ""},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], "", ""}
+       },
+       AutoDelete->False,
+       GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+       
+       GridBoxSpacings->{"Columns" -> {{0}}, "Rows" -> {{0}}}],
+      "Grid"], 
+     TagBox[GridBox[{
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False]},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], ""},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], "", "", ""}
+       },
+       AutoDelete->False,
+       GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+       
+       GridBoxSpacings->{"Columns" -> {{0}}, "Rows" -> {{0}}}],
+      "Grid"]},
+    {
+     TagBox[GridBox[{
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False]},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], "", "", ""},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], "", "", "", ""}
+       },
+       AutoDelete->False,
+       GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+       
+       GridBoxSpacings->{"Columns" -> {{0}}, "Rows" -> {{0}}}],
+      "Grid"], 
+     TagBox[GridBox[{
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False]},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], "", "", "", "", ""},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], "", "", "", "", ""}
+       },
+       AutoDelete->False,
+       GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+       
+       GridBoxSpacings->{"Columns" -> {{0}}, "Rows" -> {{0}}}],
+      "Grid"], 
+     TagBox[GridBox[{
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False]},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False]},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False]},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False]}
+       },
+       AutoDelete->False,
+       GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+       
+       GridBoxSpacings->{"Columns" -> {{0}}, "Rows" -> {{0}}}],
+      "Grid"], 
+     TagBox[GridBox[{
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False]},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], ""},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], ""},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], "", ""}
+       },
+       AutoDelete->False,
+       GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+       
+       GridBoxSpacings->{"Columns" -> {{0}}, "Rows" -> {{0}}}],
+      "Grid"], 
+     TagBox[GridBox[{
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False]},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False]},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], "", ""},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], "", ""}
+       },
+       AutoDelete->False,
+       GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+       
+       GridBoxSpacings->{"Columns" -> {{0}}, "Rows" -> {{0}}}],
+      "Grid"], 
+     TagBox[GridBox[{
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False]},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], "", ""},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], "", "", ""},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], "", "", ""}
+       },
+       AutoDelete->False,
+       GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+       
+       GridBoxSpacings->{"Columns" -> {{0}}, "Rows" -> {{0}}}],
+      "Grid"], 
+     TagBox[GridBox[{
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False]},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], "", "", "", ""},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], "", "", "", ""},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], "", "", "", ""}
+       },
+       AutoDelete->False,
+       GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+       
+       GridBoxSpacings->{"Columns" -> {{0}}, "Rows" -> {{0}}}],
+      "Grid"], 
+     TagBox[GridBox[{
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False]},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False]},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False]},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], ""},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], ""}
+       },
+       AutoDelete->False,
+       GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+       
+       GridBoxSpacings->{"Columns" -> {{0}}, "Rows" -> {{0}}}],
+      "Grid"]},
+    {
+     TagBox[GridBox[{
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False]},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], ""},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], "", ""},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], "", ""},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], "", ""}
+       },
+       AutoDelete->False,
+       GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+       
+       GridBoxSpacings->{"Columns" -> {{0}}, "Rows" -> {{0}}}],
+      "Grid"], 
+     TagBox[GridBox[{
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False]},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], "", "", ""},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], "", "", ""},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], "", "", ""},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], "", "", ""}
+       },
+       AutoDelete->False,
+       GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+       
+       GridBoxSpacings->{"Columns" -> {{0}}, "Rows" -> {{0}}}],
+      "Grid"], 
+     TagBox[GridBox[{
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False]},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False]},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], ""},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], ""},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], ""},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], ""}
+       },
+       AutoDelete->False,
+       GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+       
+       GridBoxSpacings->{"Columns" -> {{0}}, "Rows" -> {{0}}}],
+      "Grid"], 
+     TagBox[GridBox[{
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False]},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], "", ""},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], "", ""},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], "", ""},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], "", ""},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], "", ""}
+       },
+       AutoDelete->False,
+       GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+       
+       GridBoxSpacings->{"Columns" -> {{0}}, "Rows" -> {{0}}}],
+      "Grid"], 
+     TagBox[GridBox[{
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], 
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False]},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], ""},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], ""},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], ""},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], ""},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], ""},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False], ""}
+       },
+       AutoDelete->False,
+       GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+       
+       GridBoxSpacings->{"Columns" -> {{0}}, "Rows" -> {{0}}}],
+      "Grid"], 
+     TagBox[GridBox[{
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False]},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False]},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False]},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False]},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False]},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False]},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False]},
+        {
+         FrameBox["\<\"  \"\>",
+          StripOnInput->False]}
+       },
+       AutoDelete->False,
+       GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+       
+       GridBoxSpacings->{"Columns" -> {{0}}, "Rows" -> {{0}}}],
+      "Grid"], "", ""}
+   },
+   AutoDelete->False,
+   GridBoxAlignment->{"Columns" -> {{Left}}, "Rows" -> {{Baseline}}},
+   GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+  "Grid"]], "Output",
+ CellChangeTimes->{
+  3.956507077018111*^9, 3.956507649105981*^9, 3.956507787993952*^9, {
+   3.956507879313814*^9, 3.956507896998494*^9}, 3.956582169964233*^9, 
+   3.956584101843249*^9, {3.98563980973368*^9, 3.985639838522306*^9}},
+ CellLabel->"Out[24]=",ExpressionUUID->"8ae7edd2-4140-49e1-b8cc-d5feb4a37ab3"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Partitions", " ", "with", " ", "ordering"}]], "Section",
+ CellChangeTimes->{{3.912337198557682*^9, 3.912337220392774*^9}, 
+   3.9130871365097427`*^9, {3.956432267347662*^9, 3.956432268137594*^9}, {
+   3.956492552738457*^9, 3.956492562041943*^9}, {3.956507006118147*^9, 
+   3.956507023419005*^9}},ExpressionUUID->"01048c41-0a73-479a-a950-\
+b34e26db198e"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"n", "=", "10"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"dominationLattice", "[", "n", "]"}]}], "Input",
+ CellChangeTimes->{{3.956492621651325*^9, 3.956492652454998*^9}, {
+   3.956492741934092*^9, 3.956492755209851*^9}, {3.95649280349553*^9, 
+   3.956492806380348*^9}, {3.956494053785638*^9, 3.956494123422018*^9}, {
+   3.9564955600866547`*^9, 3.956495561522532*^9}, {3.956506787857688*^9, 
+   3.956506793908636*^9}, 3.9565068982964153`*^9, {3.9565069914559717`*^9, 
+   3.956506996085531*^9}, {3.956507084554656*^9, 3.956507086619217*^9}, {
+   3.956507120774748*^9, 3.956507125736174*^9}, {3.956507157614004*^9, 
+   3.956507158019121*^9}, {3.956507777489048*^9, 3.956507777727735*^9}},
+ Background->RGBColor[0.87, 0.94, 1],
+ CellLabel->"In[25]:=",ExpressionUUID->"3fa91262-ab10-4099-9f8d-14a37bb0d93c"],
+
+Cell[BoxData[
+ GraphicsBox[
+  NamespaceBox["NetworkGraphics",
+   DynamicModuleBox[{Typeset`graph = HoldComplete[
+     Graph[{{10}, {9, 1}, {8, 2}, {8, 1, 1}, {7, 3}, {7, 2, 1}, {7, 1, 1, 
+       1}, {6, 4}, {6, 3, 1}, {6, 2, 2}, {6, 2, 1, 1}, {6, 1, 1, 1, 1}, {5, 
+       5}, {5, 4, 1}, {5, 3, 2}, {5, 3, 1, 1}, {5, 2, 2, 1}, {5, 2, 1, 1, 
+       1}, {5, 1, 1, 1, 1, 1}, {4, 4, 2}, {4, 4, 1, 1}, {4, 3, 3}, {4, 3, 2, 
+       1}, {4, 3, 1, 1, 1}, {4, 2, 2, 2}, {4, 2, 2, 1, 1}, {4, 2, 1, 1, 1, 
+       1}, {4, 1, 1, 1, 1, 1, 1}, {3, 3, 3, 1}, {3, 3, 2, 2}, {3, 3, 2, 1, 
+       1}, {3, 3, 1, 1, 1, 1}, {3, 2, 2, 2, 1}, {3, 2, 2, 1, 1, 1}, {3, 2, 1, 
+       1, 1, 1, 1}, {3, 1, 1, 1, 1, 1, 1, 1}, {2, 2, 2, 2, 2}, {2, 2, 2, 2, 1,
+        1}, {2, 2, 2, 1, 1, 1, 1}, {2, 2, 1, 1, 1, 1, 1, 1}, {2, 1, 1, 1, 1, 
+       1, 1, 1, 1}, {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}}, {
+       SparseArray[
+       Automatic, {42, 42}, 0, {
+        1, {{0, 1, 2, 4, 5, 7, 9, 10, 12, 14, 16, 18, 19, 20, 21, 23, 25, 27, 
+          29, 30, 32, 33, 34, 37, 38, 40, 42, 44, 45, 46, 47, 49, 50, 52, 54, 
+          56, 57, 58, 59, 60, 61, 62, 62}, {{2}, {3}, {4}, {5}, {6}, {6}, {
+          8}, {7}, {9}, {11}, {9}, {13}, {10}, {14}, {11}, {15}, {12}, {16}, {
+          18}, {14}, {15}, {16}, {20}, {17}, {21}, {18}, {23}, {19}, {24}, {
+          27}, {21}, {22}, {23}, {23}, {24}, {25}, {29}, {26}, {26}, {30}, {
+          27}, {31}, {28}, {32}, {35}, {30}, {31}, {32}, {33}, {34}, {34}, {
+          37}, {35}, {38}, {36}, {39}, {40}, {38}, {39}, {40}, {41}, {42}}}, 
+         Pattern}], Null}, {VertexShapeFunction -> {"Name"}}]]}, 
+    TagBox[GraphicsGroupBox[GraphicsComplexBox[CompressedData["
+1:eJxVlQlQk9cWxz8tIErgBQiLIG0WGxINiWUVEHJwxKe0FdRqAWsLPBeqTlsB
+BRQoUARkk8IrVqQFNwZFiloesigXqqU+NnkUlcoma0AkJMGEpbT2W3jm651k
+7vzm3HPP3PO/3/9yQj7fsX8phmF5+J+Y/z4cgZrhLjU7LHK+BzXbA1YlU8Ya
+DiKK3wHMv9FaZ6Rb+pp7TFTa+DrABOHC3g7VIosA079BW4/H64N9xvMaF+Ni
+wNqnaIyvfybq2vyNfJHXAFakk3XsvmaR+YB9G1bmHfhc+jq/k0ljPD++PVTH
+tVP6On89Y/1j4+7FfAFg2dtpjO+3McIw1l+5yKsBSxTT6rEBi+oZYkUOSl/n
+p/bRGM9fuiQszX1Oy8wxWhzfr4tHq8cF7EUdLY5z0BFaHK+3b02v9vyrAAs7
+vlbbT0u83+qj2np4fupD2n54fkl5iPb8eL5CtUfbXzz/vTNXtf3CGZMEauMs
+vH+xc1o9mYCxwmmsD1jSv2n5+Pp1/2Vo9cXXd20z1DK+Hh9jpbvqKMZITm39
+Pyukf2d8RHxFuz+4viIDmh54/5/p0Rg/f08erT8sMAyILotcGER3trqUnZdJ
+4B//6r6UYDCMmq6uyFQ2S0B3fv2j824jyJZ9onBJmQQmbXK8Gk+Pos7rp4ab
+0yTQ3DY6hs3JUIev3Ud++yVQwHBpfjd1HL21/KjemQ0SCHqSOFbsMoHquvyG
+UpgSWClpApNlk6isrkXlNiCGn00NOzM1cvSiZtix5AcxDAZVuXaJFaj63vBw
+VIoYaisngre2KpD/7AFG+idiOJReFJK/W4l+9j9c2ucsBmXfY/fmJiX6Y1jZ
+EG4oBt+bWZPdQhVa9t28r8+QHZxa+iCyJVyFeuJP7QqpsoOcjsSnBSUqFJ+d
+01GbYQeRHGT2/gMVmm7m/LI7yA4cpmLIfjo6EMMOSpJPkmxVG/XHtJ4d3LY/
+QXKs/2XGhl4RBE9HkRxiUBlkUCmCyw8iSW74tWwu+GsRJN46TvL3N9OfSD8X
+wfyNYyTPX/bFfyJg3I8guZNYbi+C6gnKD9a2nDbStRRBo+relkKfKbTw4xPz
+OpkQEiT9ns4GCtS0I8PhZIsQAk2y3D+MUaBDPTa7XX4QgvzCZ/m3ZhWoyy8j
+TpUhBPe++D1b4pXI8saT69dDhbDpl/txlqYqJJx/9Wy/lxD097rp8G6qkIFE
+1/pNCyEkFw5MHAycRnXbZIGPxgWAsmqcZEYv0caA4qL0agF05rf1HC96iVp2
+vnrPNFsAZrf8s0bZanRlm/UmzgEBJHX6+zhnq1H71vlT/3EXgNXSh8wDcjXa
+5F1g0s4UQK9b7cAxdw1a4bXk+RcjttASZ3N3f6QGvekhZHxbbQujreqLThc1
+KMGVFe2daQtrBJtyR2o1yN75p3XRQbaQn6lP3mdSHgdbuLewjOSVpD62YB9B
+8ZekPnx4Pk3d/2BSHz6MnqS4ntSHD2sZFBeS+vCh8rIuyZQ+fEj1ppjShw8X
+5JS/UvrwIYNR6jZzTokS9q6s6JLxoK1soFJ3SIm6Z3NKRlp40PC2ZWKJgwox
+O4708st5EBqxraA/XYVsxot3FGTh8XNJuqUTKqTj6aW/+TAP2r+pubti5zRq
+bHf/k+fNg+xQxf0/G6ZR8IU8R+dVPNA14VunrH+JHpdvL41RcEGUs6f+UuVL
+tHrhSMhMAxeMlIbvvFqtRkMVn35Xk8cFm4ku+cfJarRQf32v62EuBMTfmfvp
+qRodYTtfCpdyof5G1fa1XLy/v+p+9qkpF3bFtGrOfqRBfr9Z11nJOGA+ND+m
+n6ZBjfZRuSk1HNAZAUHcNQ3K7beSl2dy4K3EwoqZuxp0u/+NttwgDhyoMafp
+wwEXWyuaPhyQB9uQHEfqw4bTh9g0fdiw3ItHMvX9sOGLkbdJpr4fNtz5UEDT
+hw3ys2to+rBBp1hE04cNW2ciSb+7evDFoPqhBZy5Ek1yAFE+3wLaYk6SzCDK
+B1mAXmwsyfcKxvziORbgWvwlydR9MoeDswkkS8dzPcdzzSErPIlkHd/boyne
+5nDTIoXkVqK8ygxah0+TnH+OGGawurrNgvAbpdOdozukZjATdraH8CN/86eB
+qaMs2GwyHE34VZvb9AfuZ1hgdLZiivCznZeWBR12ZcHOJcs9Cb+T+VrEWI6Y
+Amv7wD7CD9OAe3Vjjin4JnvsI/zS45hANg6moHfBZgPhp68mhc5GShM4uvGN
+3wi/bb/Gzyu/aALnPXmbCT9eNRtgleZhAtlJLnLCr8MqPnBV9BmDDwv+R/j5
+o37z6YFkY2ia3DBF+D2cKPrnJ07GYGos3kK8B1VfKZ1DnzOBF2faQ7wXbgvL
+GxauMOF3x8lrxHvSODQ+siqUCflOtRXEe/Ox29dXHqxjwl/NSwx+
+       "], {
+        {Hue[0.6, 0.7, 0.5], Opacity[0.7], Arrowheads[0.07554401580850346], 
+         ArrowBox[{1, 2}, 0.18130563798219584`], 
+         ArrowBox[{2, 3}, 0.18130563798219584`], 
+         ArrowBox[{3, 4}, 0.18130563798219584`], 
+         ArrowBox[{3, 5}, 0.18130563798219584`], 
+         ArrowBox[{4, 6}, 0.18130563798219584`], 
+         ArrowBox[{5, 6}, 0.18130563798219584`], 
+         ArrowBox[{5, 8}, 0.18130563798219584`], 
+         ArrowBox[
+          BezierCurveBox[{6, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 
+           59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 7}], 
+          0.18130563798219584`], ArrowBox[{6, 9}, 0.18130563798219584`], 
+         ArrowBox[{7, 11}, 0.18130563798219584`], 
+         ArrowBox[{8, 9}, 0.18130563798219584`], 
+         ArrowBox[{8, 13}, 0.18130563798219584`], 
+         ArrowBox[{9, 10}, 0.18130563798219584`], 
+         ArrowBox[{9, 14}, 0.18130563798219584`], 
+         ArrowBox[{10, 11}, 0.18130563798219584`], 
+         ArrowBox[{10, 15}, 0.18130563798219584`], 
+         ArrowBox[
+          BezierCurveBox[{11, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 
+           85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 12}], 
+          0.18130563798219584`], ArrowBox[{11, 16}, 0.18130563798219584`], 
+         ArrowBox[{12, 18}, 0.18130563798219584`], 
+         ArrowBox[{13, 14}, 0.18130563798219584`], 
+         ArrowBox[{14, 15}, 0.18130563798219584`], 
+         ArrowBox[{15, 16}, 0.18130563798219584`], 
+         ArrowBox[{15, 20}, 0.18130563798219584`], 
+         ArrowBox[{16, 17}, 0.18130563798219584`], 
+         ArrowBox[{16, 21}, 0.18130563798219584`], 
+         ArrowBox[{17, 18}, 0.18130563798219584`], 
+         ArrowBox[{17, 23}, 0.18130563798219584`], 
+         ArrowBox[
+          BezierCurveBox[{18, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108,
+            109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 
+           122, 123, 124, 19}], 0.18130563798219584`], 
+         ArrowBox[{18, 24}, 0.18130563798219584`], 
+         ArrowBox[{19, 27}, 0.18130563798219584`], 
+         ArrowBox[{20, 21}, 0.18130563798219584`], 
+         ArrowBox[{20, 22}, 0.18130563798219584`], 
+         ArrowBox[{21, 23}, 0.18130563798219584`], 
+         ArrowBox[{22, 23}, 0.18130563798219584`], 
+         ArrowBox[{23, 24}, 0.18130563798219584`], 
+         ArrowBox[{23, 25}, 0.18130563798219584`], 
+         ArrowBox[{23, 29}, 0.18130563798219584`], 
+         ArrowBox[{24, 26}, 0.18130563798219584`], 
+         ArrowBox[{25, 26}, 0.18130563798219584`], 
+         ArrowBox[{25, 30}, 0.18130563798219584`], 
+         ArrowBox[{26, 27}, 0.18130563798219584`], 
+         ArrowBox[{26, 31}, 0.18130563798219584`], 
+         ArrowBox[{27, 28}, 0.18130563798219584`], 
+         ArrowBox[{27, 32}, 0.18130563798219584`], 
+         ArrowBox[
+          BezierCurveBox[{28, 125, 126, 127, 128, 129, 130, 131, 132, 133, 
+           134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 
+           147, 148, 149, 150, 35}], 0.18130563798219584`], 
+         ArrowBox[{29, 30}, 0.18130563798219584`], 
+         ArrowBox[{30, 31}, 0.18130563798219584`], 
+         ArrowBox[{31, 32}, 0.18130563798219584`], 
+         ArrowBox[{31, 33}, 0.18130563798219584`], 
+         ArrowBox[{32, 34}, 0.18130563798219584`], 
+         ArrowBox[{33, 34}, 0.18130563798219584`], 
+         ArrowBox[{33, 37}, 0.18130563798219584`], 
+         ArrowBox[{34, 35}, 0.18130563798219584`], 
+         ArrowBox[{34, 38}, 0.18130563798219584`], 
+         ArrowBox[{35, 36}, 0.18130563798219584`], 
+         ArrowBox[{35, 39}, 0.18130563798219584`], 
+         ArrowBox[{36, 40}, 0.18130563798219584`], 
+         ArrowBox[{37, 38}, 0.18130563798219584`], 
+         ArrowBox[{38, 39}, 0.18130563798219584`], 
+         ArrowBox[{39, 40}, 0.18130563798219584`], 
+         ArrowBox[{40, 41}, 0.18130563798219584`], 
+         ArrowBox[{41, 42}, 0.18130563798219584`]}, 
+        {Hue[0.6, 0.2, 0.8], EdgeForm[{GrayLevel[0], Opacity[0.7]}], 
+         InsetBox[
+          PaneBox[
+           RowBox[{"{", "10", "}"}],
+           Alignment->Center,
+           ImageMargins->2], 1,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"9", ",", "1"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 2,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"8", ",", "2"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 3,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"8", ",", "1", ",", "1"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 4,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"7", ",", "3"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 5,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"7", ",", "2", ",", "1"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 6,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"7", ",", "1", ",", "1", ",", "1"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 7,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"6", ",", "4"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 8,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"6", ",", "3", ",", "1"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 9,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"6", ",", "2", ",", "2"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 10,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"6", ",", "2", ",", "1", ",", "1"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 11,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"6", ",", "1", ",", "1", ",", "1", ",", "1"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 12,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"5", ",", "5"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 13,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"5", ",", "4", ",", "1"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 14,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"5", ",", "3", ",", "2"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 15,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"5", ",", "3", ",", "1", ",", "1"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 16,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"5", ",", "2", ",", "2", ",", "1"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 17,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"5", ",", "2", ",", "1", ",", "1", ",", "1"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 18,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"5", ",", "1", ",", "1", ",", "1", ",", "1", ",", "1"}], 
+            "}"}],
+           Alignment->Center,
+           ImageMargins->2], 19,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"4", ",", "4", ",", "2"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 20,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"4", ",", "4", ",", "1", ",", "1"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 21,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"4", ",", "3", ",", "3"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 22,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"4", ",", "3", ",", "2", ",", "1"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 23,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"4", ",", "3", ",", "1", ",", "1", ",", "1"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 24,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"4", ",", "2", ",", "2", ",", "2"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 25,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"4", ",", "2", ",", "2", ",", "1", ",", "1"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 26,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"4", ",", "2", ",", "1", ",", "1", ",", "1", ",", "1"}], 
+            "}"}],
+           Alignment->Center,
+           ImageMargins->2], 27,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{
+            "4", ",", "1", ",", "1", ",", "1", ",", "1", ",", "1", ",", "1"}],
+             "}"}],
+           Alignment->Center,
+           ImageMargins->2], 28,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"3", ",", "3", ",", "3", ",", "1"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 29,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"3", ",", "3", ",", "2", ",", "2"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 30,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"3", ",", "3", ",", "2", ",", "1", ",", "1"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 31,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"3", ",", "3", ",", "1", ",", "1", ",", "1", ",", "1"}], 
+            "}"}],
+           Alignment->Center,
+           ImageMargins->2], 32,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"3", ",", "2", ",", "2", ",", "2", ",", "1"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 33,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"3", ",", "2", ",", "2", ",", "1", ",", "1", ",", "1"}], 
+            "}"}],
+           Alignment->Center,
+           ImageMargins->2], 34,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{
+            "3", ",", "2", ",", "1", ",", "1", ",", "1", ",", "1", ",", "1"}],
+             "}"}],
+           Alignment->Center,
+           ImageMargins->2], 35,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{
+            "3", ",", "1", ",", "1", ",", "1", ",", "1", ",", "1", ",", "1", 
+             ",", "1"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 36,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"2", ",", "2", ",", "2", ",", "2", ",", "2"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 37,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"2", ",", "2", ",", "2", ",", "2", ",", "1", ",", "1"}], 
+            "}"}],
+           Alignment->Center,
+           ImageMargins->2], 38,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{
+            "2", ",", "2", ",", "2", ",", "1", ",", "1", ",", "1", ",", "1"}],
+             "}"}],
+           Alignment->Center,
+           ImageMargins->2], 39,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{
+            "2", ",", "2", ",", "1", ",", "1", ",", "1", ",", "1", ",", "1", 
+             ",", "1"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 40,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{
+            "2", ",", "1", ",", "1", ",", "1", ",", "1", ",", "1", ",", "1", 
+             ",", "1", ",", "1"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 41,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{
+            "1", ",", "1", ",", "1", ",", "1", ",", "1", ",", "1", ",", "1", 
+             ",", "1", ",", "1", ",", "1"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 42,
+          BaseStyle->"Graphics"]}}]],
+     MouseAppearanceTag["NetworkGraphics"]],
+    AllowKernelInitialization->False]],
+  DefaultBaseStyle->"NetworkGraphics",
+  FormatType->TraditionalForm,
+  FrameTicks->None,
+  ImageSize->{422.7940907085182, Automatic}]], "Output",
+ CellChangeTimes->{{3.956492638756157*^9, 3.9564926541413717`*^9}, {
+   3.956492744884059*^9, 3.956492756309969*^9}, 3.956492807655794*^9, {
+   3.9564940547867403`*^9, 3.956494124492487*^9}, 3.956506802642452*^9, 
+   3.956506899570241*^9, {3.956507077244078*^9, 3.956507088043601*^9}, {
+   3.956507122217301*^9, 3.956507129317066*^9}, 3.95650737163344*^9, {
+   3.956507782085551*^9, 3.956507788996187*^9}, 3.956582171464292*^9, 
+   3.956584103788562*^9, {3.985639812518056*^9, 3.985639839468751*^9}},
+ CellLabel->"Out[26]=",ExpressionUUID->"599be38e-7d9c-4ce5-afd0-fabb8fab6955"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"dominationsubLatticeuptom", "[", 
+  RowBox[{"n", ",", " ", "3"}], "]"}]], "Input",
+ CellLabel->"In[27]:=",ExpressionUUID->"796a0722-6013-4eac-b16e-083619116ebe"],
+
+Cell[BoxData[
+ GraphicsBox[
+  NamespaceBox["NetworkGraphics",
+   DynamicModuleBox[{Typeset`graph = HoldComplete[
+     Graph[{{10}, {9, 1}, {8, 2}, {8, 1, 1}, {7, 3}, {7, 2, 1}, {6, 4}, {6, 3,
+        1}, {6, 2, 2}, {5, 5}, {5, 4, 1}, {5, 3, 2}, {4, 4, 2}, {4, 3, 3}}, {
+       SparseArray[
+       Automatic, {14, 14}, 0, {
+        1, {{0, 1, 2, 4, 5, 7, 8, 10, 12, 13, 14, 15, 16, 17, 17}, {{2}, {
+          3}, {4}, {5}, {6}, {6}, {7}, {8}, {8}, {10}, {9}, {11}, {12}, {
+          11}, {12}, {13}, {14}}}, Pattern}], Null}, {
+      VertexShapeFunction -> {"Name"}}]]}, 
+    TagBox[
+     GraphicsGroupBox[
+      GraphicsComplexBox[{{0., 9.}, {0., 8.}, {0., 7.}, {-1., 6.}, {0., 
+       6.}, {-1., 5.}, {0., 5.}, {-1., 4.}, {-1., 3.}, {0., 4.}, {0., 
+       3.}, {-1., 2.}, {-1., 1.}, {-1., 0.}}, {
+        {Hue[0.6, 0.7, 0.5], Opacity[0.7], Arrowheads[Medium], 
+         ArrowBox[{1, 2}, 0.12378854625550659`], 
+         ArrowBox[{2, 3}, 0.12378854625550659`], 
+         ArrowBox[{3, 4}, 0.12378854625550659`], 
+         ArrowBox[{3, 5}, 0.12378854625550659`], 
+         ArrowBox[{4, 6}, 0.12378854625550659`], 
+         ArrowBox[{5, 6}, 0.12378854625550659`], 
+         ArrowBox[{5, 7}, 0.12378854625550659`], 
+         ArrowBox[{6, 8}, 0.12378854625550659`], 
+         ArrowBox[{7, 8}, 0.12378854625550659`], 
+         ArrowBox[{7, 10}, 0.12378854625550659`], 
+         ArrowBox[{8, 9}, 0.12378854625550659`], 
+         ArrowBox[{8, 11}, 0.12378854625550659`], 
+         ArrowBox[{9, 12}, 0.12378854625550659`], 
+         ArrowBox[{10, 11}, 0.12378854625550659`], 
+         ArrowBox[{11, 12}, 0.12378854625550659`], 
+         ArrowBox[{12, 13}, 0.12378854625550659`], 
+         ArrowBox[{13, 14}, 0.12378854625550659`]}, 
+        {Hue[0.6, 0.2, 0.8], EdgeForm[{GrayLevel[0], Opacity[0.7]}], 
+         InsetBox[
+          PaneBox[
+           RowBox[{"{", "10", "}"}],
+           Alignment->Center,
+           ImageMargins->2], 1,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"9", ",", "1"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 2,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"8", ",", "2"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 3,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"8", ",", "1", ",", "1"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 4,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"7", ",", "3"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 5,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"7", ",", "2", ",", "1"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 6,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"6", ",", "4"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 7,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"6", ",", "3", ",", "1"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 8,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"6", ",", "2", ",", "2"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 9,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"5", ",", "5"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 10,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"5", ",", "4", ",", "1"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 11,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"5", ",", "3", ",", "2"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 12,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"4", ",", "4", ",", "2"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 13,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"4", ",", "3", ",", "3"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 14,
+          BaseStyle->"Graphics"]}}]],
+     MouseAppearanceTag["NetworkGraphics"]],
+    AllowKernelInitialization->False]],
+  DefaultBaseStyle->"NetworkGraphics",
+  FormatType->TraditionalForm,
+  FrameTicks->None]], "Output",
+ CellChangeTimes->{{3.985639805479273*^9, 3.985639839637373*^9}},
+ CellLabel->"Out[27]=",ExpressionUUID->"c1aae669-e2d3-4cf5-99e1-bbe16e661865"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Check for  self - similar structures", "Subsection",
+ CellChangeTimes->{{3.9565814288358*^9, 3.956581438686585*^9}, {
+  3.9565869961334057`*^9, 
+  3.956587005121647*^9}},ExpressionUUID->"5a0288af-6923-430e-9cef-\
+77f56f257c69"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"n", "=", "6"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"dominationLattice", "[", "n", "]"}], "\[IndentingNewLine]", 
+ RowBox[{"dominationLattice", "[", 
+  RowBox[{"n", "+", "1"}], "]"}]}], "Input",
+ CellChangeTimes->{{3.956492621651325*^9, 3.956492652454998*^9}, {
+   3.956492741934092*^9, 3.956492755209851*^9}, {3.95649280349553*^9, 
+   3.956492806380348*^9}, {3.956494053785638*^9, 3.956494123422018*^9}, {
+   3.9564955600866547`*^9, 3.956495561522532*^9}, {3.956506787857688*^9, 
+   3.956506793908636*^9}, 3.9565068982964153`*^9, {3.9565069914559717`*^9, 
+   3.956506996085531*^9}, {3.956507084554656*^9, 3.956507086619217*^9}, {
+   3.956507120774748*^9, 3.956507125736174*^9}, {3.956507157614004*^9, 
+   3.956507158019121*^9}, {3.956507777489048*^9, 3.956507777727735*^9}, {
+   3.95658146528797*^9, 3.956581484273089*^9}, {3.956582180061903*^9, 
+   3.956582180400099*^9}, {3.956582221478409*^9, 3.9565822217448378`*^9}},
+ Background->RGBColor[0.87, 0.94, 1],
+ CellLabel->"In[28]:=",ExpressionUUID->"83afc54b-e675-4dac-b244-909b82a7e9af"],
+
+Cell[BoxData[
+ GraphicsBox[
+  NamespaceBox["NetworkGraphics",
+   DynamicModuleBox[{Typeset`graph = HoldComplete[
+     Graph[{{6}, {5, 1}, {4, 2}, {4, 1, 1}, {3, 3}, {3, 2, 1}, {3, 1, 1, 1}, {
+       2, 2, 2}, {2, 2, 1, 1}, {2, 1, 1, 1, 1}, {1, 1, 1, 1, 1, 1}}, {
+       SparseArray[
+       Automatic, {11, 11}, 0, {
+        1, {{0, 1, 2, 4, 5, 6, 8, 9, 10, 11, 12, 12}, {{2}, {3}, {4}, {5}, {
+          6}, {6}, {7}, {8}, {9}, {9}, {10}, {11}}}, Pattern}], Null}, {
+      VertexShapeFunction -> {"Name"}}]]}, 
+    TagBox[
+     GraphicsGroupBox[
+      GraphicsComplexBox[{{0., 8.}, {0., 7.}, {0., 6.}, {-1., 5.}, {0., 
+       5.}, {-1., 4.}, {-2., 3.}, {-1., 3.}, {-2., 2.}, {-2., 1.}, {-2., 
+       0.}}, {
+        {Hue[0.6, 0.7, 0.5], Opacity[0.7], Arrowheads[Medium], 
+         ArrowBox[{1, 2}, 0.11566820276497694`], 
+         ArrowBox[{2, 3}, 0.11566820276497694`], 
+         ArrowBox[{3, 4}, 0.11566820276497694`], 
+         ArrowBox[{3, 5}, 0.11566820276497694`], 
+         ArrowBox[{4, 6}, 0.11566820276497694`], 
+         ArrowBox[{5, 6}, 0.11566820276497694`], 
+         ArrowBox[{6, 7}, 0.11566820276497694`], 
+         ArrowBox[{6, 8}, 0.11566820276497694`], 
+         ArrowBox[{7, 9}, 0.11566820276497694`], 
+         ArrowBox[{8, 9}, 0.11566820276497694`], 
+         ArrowBox[{9, 10}, 0.11566820276497694`], 
+         ArrowBox[{10, 11}, 0.11566820276497694`]}, 
+        {Hue[0.6, 0.2, 0.8], EdgeForm[{GrayLevel[0], Opacity[0.7]}], 
+         InsetBox[
+          PaneBox[
+           RowBox[{"{", "6", "}"}],
+           Alignment->Center,
+           ImageMargins->2], 1,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"5", ",", "1"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 2,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"4", ",", "2"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 3,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"4", ",", "1", ",", "1"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 4,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"3", ",", "3"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 5,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"3", ",", "2", ",", "1"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 6,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"3", ",", "1", ",", "1", ",", "1"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 7,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"2", ",", "2", ",", "2"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 8,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"2", ",", "2", ",", "1", ",", "1"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 9,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"2", ",", "1", ",", "1", ",", "1", ",", "1"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 10,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"1", ",", "1", ",", "1", ",", "1", ",", "1", ",", "1"}], 
+            "}"}],
+           Alignment->Center,
+           ImageMargins->2], 11,
+          BaseStyle->"Graphics"]}}]],
+     MouseAppearanceTag["NetworkGraphics"]],
+    AllowKernelInitialization->False]],
+  DefaultBaseStyle->"NetworkGraphics",
+  FormatType->TraditionalForm,
+  FrameTicks->None]], "Output",
+ CellChangeTimes->{
+  3.956582244190897*^9, 3.9565841039489307`*^9, {3.9856398127508383`*^9, 
+   3.9856398397134943`*^9}},
+ CellLabel->"Out[29]=",ExpressionUUID->"4565be7b-6bd3-4f61-b0b0-7039438d011f"],
+
+Cell[BoxData[
+ GraphicsBox[
+  NamespaceBox["NetworkGraphics",
+   DynamicModuleBox[{Typeset`graph = HoldComplete[
+     Graph[{{7}, {6, 1}, {5, 2}, {5, 1, 1}, {4, 3}, {4, 2, 1}, {4, 1, 1, 1}, {
+       3, 3, 1}, {3, 2, 2}, {3, 2, 1, 1}, {3, 1, 1, 1, 1}, {2, 2, 2, 1}, {2, 
+       2, 1, 1, 1}, {2, 1, 1, 1, 1, 1}, {1, 1, 1, 1, 1, 1, 1}}, {
+       SparseArray[
+       Automatic, {15, 15}, 0, {
+        1, {{0, 1, 2, 4, 5, 6, 8, 9, 10, 11, 13, 14, 15, 16, 17, 17}, {{2}, {
+          3}, {4}, {5}, {6}, {6}, {7}, {8}, {10}, {9}, {10}, {11}, {12}, {
+          13}, {13}, {14}, {15}}}, Pattern}], Null}, {
+      VertexShapeFunction -> {"Name"}}]]}, 
+    TagBox[GraphicsGroupBox[GraphicsComplexBox[CompressedData["
+1:eJxTTMoPSmViYGDQAmIQjQrUHFD5Kmh8JSj/w34IrYAmr4AmL4PGl4CpP4Cd
+L4KmXgBNngNNngNNngGN/8EeTZ4BVT/CvpXpbx59PS8O50cu4bG5O0vcgRHK
+59mWwL0tASF/eM6LgAZFBL8+AqRBDM63fznZ7uVkBJ/Ff/uzdlcE/2wnH6vE
+J1E4f9ZMEEDwwdrtEHzLvscWfY9F4O7p7AABhPtvNuneaNJF8DVqL6nXXhKG
+8yvKQQDBP14oA0QIvnjOQbGcg0JwfhoYIPgmZR9/PedF8P9u8JCs2CUId88h
+MZABgnD5puXRnw8rIfh2yeLr6+8JwPlfPOcDEYK/AqQ8FcEPmyEsy2Ug4AAA
+7i+Yaw==
+       "], {
+        {Hue[0.6, 0.7, 0.5], Opacity[0.7], Arrowheads[Medium], 
+         ArrowBox[{1, 2}, 0.1380566801619433], 
+         ArrowBox[{2, 3}, 0.1380566801619433], 
+         ArrowBox[{3, 4}, 0.1380566801619433], 
+         ArrowBox[{3, 5}, 0.1380566801619433], 
+         ArrowBox[{4, 6}, 0.1380566801619433], 
+         ArrowBox[{5, 6}, 0.1380566801619433], 
+         ArrowBox[{6, 7}, 0.1380566801619433], 
+         ArrowBox[{6, 8}, 0.1380566801619433], 
+         ArrowBox[
+          BezierCurveBox[{7, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 
+           29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 10}], 
+          0.1380566801619433], ArrowBox[{8, 9}, 0.1380566801619433], 
+         ArrowBox[{9, 10}, 0.1380566801619433], 
+         ArrowBox[{10, 11}, 0.1380566801619433], 
+         ArrowBox[{10, 12}, 0.1380566801619433], 
+         ArrowBox[{11, 13}, 0.1380566801619433], 
+         ArrowBox[{12, 13}, 0.1380566801619433], 
+         ArrowBox[{13, 14}, 0.1380566801619433], 
+         ArrowBox[{14, 15}, 0.1380566801619433]}, 
+        {Hue[0.6, 0.2, 0.8], EdgeForm[{GrayLevel[0], Opacity[0.7]}], 
+         InsetBox[
+          PaneBox[
+           RowBox[{"{", "7", "}"}],
+           Alignment->Center,
+           ImageMargins->2], 1,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"6", ",", "1"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 2,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"5", ",", "2"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 3,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"5", ",", "1", ",", "1"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 4,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"4", ",", "3"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 5,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"4", ",", "2", ",", "1"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 6,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"4", ",", "1", ",", "1", ",", "1"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 7,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"3", ",", "3", ",", "1"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 8,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"3", ",", "2", ",", "2"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 9,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"3", ",", "2", ",", "1", ",", "1"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 10,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"3", ",", "1", ",", "1", ",", "1", ",", "1"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 11,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"2", ",", "2", ",", "2", ",", "1"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 12,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"2", ",", "2", ",", "1", ",", "1", ",", "1"}], "}"}],
+           Alignment->Center,
+           ImageMargins->2], 13,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{"2", ",", "1", ",", "1", ",", "1", ",", "1", ",", "1"}], 
+            "}"}],
+           Alignment->Center,
+           ImageMargins->2], 14,
+          BaseStyle->"Graphics"], InsetBox[
+          PaneBox[
+           RowBox[{"{", 
+            RowBox[{
+            "1", ",", "1", ",", "1", ",", "1", ",", "1", ",", "1", ",", "1"}],
+             "}"}],
+           Alignment->Center,
+           ImageMargins->2], 15,
+          BaseStyle->"Graphics"]}}]],
+     MouseAppearanceTag["NetworkGraphics"]],
+    AllowKernelInitialization->False]],
+  DefaultBaseStyle->"NetworkGraphics",
+  FormatType->TraditionalForm,
+  FrameTicks->None]], "Output",
+ CellChangeTimes->{
+  3.956582244190897*^9, 3.9565841039489307`*^9, {3.9856398127508383`*^9, 
+   3.985639839840111*^9}},
+ CellLabel->"Out[30]=",ExpressionUUID->"552d3061-c1b8-478f-a118-9106830f3435"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Checking", " ", "for", " ", "dominance", " ", 
+  "ordering"}]], "Section",
+ CellChangeTimes->{{3.912337198557682*^9, 3.912337220392774*^9}, 
+   3.9130871365097427`*^9, {3.956432267347662*^9, 3.956432268137594*^9}, {
+   3.956492552738457*^9, 3.956492562041943*^9}, {3.956507006118147*^9, 
+   3.956507057559581*^9}},ExpressionUUID->"3fe5c668-f804-40c3-9f01-\
+90743ca4f283"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+  "ResourceFunction", "[", "\"\<DominatingIntegerPartitionQ\>\"", "]"}], "[", 
+  
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"5", ",", "1", ",", "1", ",", "1"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"4", ",", "3", ",", "1"}], "}"}]}], "]"}]], "Input",
+ CellChangeTimes->{{3.956506970973337*^9, 3.956506970975514*^9}},
+ CellLabel->"In[31]:=",ExpressionUUID->"61750994-d733-4b23-a77c-339b27b0c0c7"],
+
+Cell[BoxData["False"], "Output",
+ CellChangeTimes->{
+  3.956506973409008*^9, 3.956507077252713*^9, 3.956507789065221*^9, 
+   3.956582172382476*^9, 3.95658410408571*^9, {3.985639812891801*^9, 
+   3.9856398398494987`*^9}},
+ CellLabel->"Out[31]=",ExpressionUUID->"ad82ea92-4e70-492d-8373-5b138452564e"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{2447, 1293},
+WindowMargins->{{Automatic, 34}, {Automatic, -507}},
+DockedCells->{},
+FrontEndVersion->"14.0 for Mac OS X ARM (64-bit) (December 12, 2023)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"d70fe15b-3f5d-49ce-94cf-a50f6f4676b5"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[400, 13, 649, 10, 68, "Input",ExpressionUUID->"b626188f-e743-4304-82a9-1f43e2c251ee",
+ InitializationCell->True],
+Cell[1052, 25, 1832, 46, 152, "Input",ExpressionUUID->"6d585ae6-3df1-453e-85b3-d825f46c8902",
+ InitializationCell->True],
+Cell[CellGroupData[{
+Cell[2909, 75, 236, 4, 69, "Chapter",ExpressionUUID->"1f653e75-070b-494f-85cd-c2f20162c386"],
+Cell[CellGroupData[{
+Cell[3170, 83, 412, 7, 68, "Section",ExpressionUUID->"99581052-072e-410a-8aed-282d662550e0"],
+Cell[CellGroupData[{
+Cell[3607, 94, 1328, 29, 89, "Input",ExpressionUUID->"22b64919-188a-40ff-a7cc-025d0ca93d9c"],
+Cell[4938, 125, 2093, 55, 34, "Output",ExpressionUUID->"1e342dc3-abf3-4da2-9099-cf5f18e0e27b"],
+Cell[7034, 182, 18219, 606, 465, "Output",ExpressionUUID->"8ae7edd2-4140-49e1-b8cc-d5feb4a37ab3"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[25302, 794, 377, 6, 68, "Section",ExpressionUUID->"01048c41-0a73-479a-a950-b34e26db198e"],
+Cell[CellGroupData[{
+Cell[25704, 804, 839, 13, 68, "Input",ExpressionUUID->"3fa91262-ab10-4099-9f8d-14a37bb0d93c"],
+Cell[26546, 819, 18424, 425, 2422, "Output",ExpressionUUID->"599be38e-7d9c-4ce5-afd0-fabb8fab6955"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[45007, 1249, 185, 3, 30, "Input",ExpressionUUID->"796a0722-6013-4eac-b16e-083619116ebe"],
+Cell[45195, 1254, 4907, 126, 449, "Output",ExpressionUUID->"c1aae669-e2d3-4cf5-99e1-bbe16e661865"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[50139, 1385, 233, 4, 54, "Subsection",ExpressionUUID->"5a0288af-6923-430e-9cef-77f56f257c69"],
+Cell[CellGroupData[{
+Cell[50397, 1393, 1079, 17, 89, "Input",ExpressionUUID->"83afc54b-e675-4dac-b244-909b82a7e9af"],
+Cell[51479, 1412, 4102, 105, 449, "Output",ExpressionUUID->"4565be7b-6bd3-4f61-b0b0-7039438d011f"],
+Cell[55584, 1519, 5775, 144, 449, "Output",ExpressionUUID->"552d3061-c1b8-478f-a118-9106830f3435"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[61420, 1670, 395, 7, 68, "Section",ExpressionUUID->"3fe5c668-f804-40c3-9f01-90743ca4f283"],
+Cell[CellGroupData[{
+Cell[61840, 1681, 433, 11, 30, "Input",ExpressionUUID->"61750994-d733-4b23-a77c-339b27b0c0c7"],
+Cell[62276, 1694, 299, 5, 57, "Output",ExpressionUUID->"ad82ea92-4e70-492d-8373-5b138452564e"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+

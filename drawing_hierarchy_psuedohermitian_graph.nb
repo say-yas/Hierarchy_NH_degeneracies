@@ -1,0 +1,2037 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 14.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     96268,       2029]
+NotebookOptionsPosition[     92638,       1966]
+NotebookOutlinePosition[     93037,       1982]
+CellTagsIndexPosition[     92994,       1979]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[{
+ RowBox[{"ClearAll", "[", "\"\<Global`*\>\"", "]"}], "\n", 
+ RowBox[{"Remove", "[", "\"\<Global`*\>\"", "]"}]}], "Input",
+ CellChangeTimes->{{3.978687177270547*^9, 3.9786871772727623`*^9}},
+ CellLabel->
+  "In[127]:=",ExpressionUUID->"6cbd5101-5d6b-4319-9588-4ab79623c079"],
+
+Cell[CellGroupData[{
+
+Cell["Main  implementation", "Section",
+ CellChangeTimes->{{3.963171171783017*^9, 
+  3.9631711852379827`*^9}},ExpressionUUID->"e9880297-f1af-4814-b1ec-\
+0262ffefdeeb"],
+
+Cell["\<\
+Mutation rules are from D. Djokovic, \[OpenCurlyDoubleQuote]Closures of \
+Conjugacy Classes in Classical Real Linear Lie Groups. II\
+\[CloseCurlyDoubleQuote], Transactions of the American Mathematical Society \
+270,1 (1982).
+
+Eq. (8.1): \
+g^\[Epsilon](m)+g^(-\[Epsilon])(n)\[RightArrow]g^(-\[Epsilon])(m-1)+g^\
+\[Epsilon](n+1)     m <=n
+Eq. (8.2): g^\[Epsilon](m)+g^\[Epsilon](n)\[RightArrow]g^\[Epsilon](m-2)+g^\
+\[Epsilon](n+2)             1<m<=n
+Eq. (8.3): \
+g_\[Epsilon](m)+g_{-\[Epsilon]}(n)\[RightArrow]g_{-\[Epsilon]}(m-1)+g_\
+\[Epsilon](n+1)    m<=n
+\
+\>", "Text",
+ CellChangeTimes->{{3.963152714336275*^9, 3.963152721155937*^9}, {
+  3.963156825432961*^9, 3.963157030143566*^9}, {3.963157066071267*^9, 
+  3.963157086762168*^9}},ExpressionUUID->"39e16c75-6ba2-49d7-8182-\
+5c7f9b8cfbb5"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+    "find", " ", "values", " ", "of", " ", "m", " ", "and", " ", "\[Epsilon]",
+      " ", "from", " ", "term"}], "=", "m\[Epsilon]"}], "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"parseTerm", "[", "term_String", "]"}], ":=", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"m", ",", "eps"}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"If", "[", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"StringTake", "[", 
+          RowBox[{"term", ",", 
+           RowBox[{"-", "1"}]}], "]"}], "==", "\"\<+\>\""}], ",", 
+        RowBox[{
+         RowBox[{"m", "=", 
+          RowBox[{"ToExpression", "[", 
+           RowBox[{"StringDrop", "[", 
+            RowBox[{"term", ",", 
+             RowBox[{"-", "1"}]}], "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+         RowBox[{"eps", "=", "\"\<+\>\""}], ";"}], ",", 
+        RowBox[{
+         RowBox[{"m", "=", 
+          RowBox[{"ToExpression", "[", 
+           RowBox[{"StringDrop", "[", 
+            RowBox[{"term", ",", 
+             RowBox[{"-", "1"}]}], "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+         RowBox[{"eps", "=", "\"\<-\>\""}], ";"}]}], "]"}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"{", 
+       RowBox[{"m", ",", "eps"}], "}"}]}]}], "]"}]}]}]], "Input",
+ CellChangeTimes->{{3.963152723042045*^9, 3.963152806244215*^9}},
+ CellLabel->
+  "In[129]:=",ExpressionUUID->"1f96cfdc-05d6-4395-b8db-6d827bf7455e"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{"find", " ", "term"}], "=", 
+    RowBox[{
+    "m\[Epsilon]", " ", "given", " ", "m", " ", "and", " ", "\[Epsilon]"}]}], 
+   "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"makeTerm", "[", 
+    RowBox[{"m_Integer", ",", "eps_String"}], "]"}], ":=", 
+   RowBox[{
+    RowBox[{"ToString", "[", "m", "]"}], "<>", "eps"}]}]}]], "Input",
+ CellLabel->
+  "In[130]:=",ExpressionUUID->"8abc0562-f94f-40a2-9cba-aa8c24ef6db6"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "printing", " ", "node", " ", "labels", " ", "for", " ", 
+    "chromosom_list"}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"formatChromosome", "[", "chromosome_List", "]"}], ":=", 
+   RowBox[{"StringRiffle", "[", 
+    RowBox[{"chromosome", ",", 
+     RowBox[{"{", 
+      RowBox[{"\"\<{\>\"", ",", "\"\< , \>\"", ",", "\"\<}\>\""}], "}"}]}], 
+    "]"}]}]}]], "Input",
+ CellChangeTimes->{{3.963153060832224*^9, 3.963153097555925*^9}},
+ CellLabel->
+  "In[131]:=",ExpressionUUID->"2864b469-dec0-4442-ad39-95ea65eb9e49"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "sort", " ", "elements", " ", "of", " ", "chormosome", " ", "list", " ", 
+    "to", " ", "prevent", " ", "duplication", " ", "in", " ", "nodes"}], 
+   "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"sortChromosomeCompact", "[", "chromosome_List", "]"}], ":=", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"groupedByValue", ",", "sortedGroups"}], "}"}], ",", 
+     RowBox[{
+      RowBox[{"groupedByValue", "=", 
+       RowBox[{"GatherBy", "[", 
+        RowBox[{"chromosome", ",", 
+         RowBox[{
+          RowBox[{"ToExpression", "[", 
+           RowBox[{"StringDrop", "[", 
+            RowBox[{"#", ",", 
+             RowBox[{"-", "1"}]}], "]"}], "]"}], "&"}]}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"sortedGroups", "=", 
+       RowBox[{"Map", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"SortBy", "[", 
+           RowBox[{"#", ",", 
+            RowBox[{
+             RowBox[{"If", "[", 
+              RowBox[{
+               RowBox[{"StringEndsQ", "[", 
+                RowBox[{"#", ",", "\"\<+\>\""}], "]"}], ",", "0", ",", "1"}], 
+              "]"}], "&"}]}], "]"}], "&"}], ",", "groupedByValue"}], "]"}]}], 
+      ";", "\[IndentingNewLine]", 
+      RowBox[{"sortedGroups", "=", 
+       RowBox[{"SortBy", "[", 
+        RowBox[{"sortedGroups", ",", 
+         RowBox[{
+          RowBox[{"-", 
+           RowBox[{"ToExpression", "[", 
+            RowBox[{"StringDrop", "[", 
+             RowBox[{
+              RowBox[{"#", "[", 
+               RowBox[{"[", "1", "]"}], "]"}], ",", 
+              RowBox[{"-", "1"}]}], "]"}], "]"}]}], "&"}]}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"Flatten", "[", "sortedGroups", "]"}]}]}], "]"}]}]}]], "Input",
+ CellChangeTimes->{{3.963168268741337*^9, 3.963168322950019*^9}, {
+  3.963168997646792*^9, 3.963169000084943*^9}, {3.963169091390585*^9, 
+  3.963169111761731*^9}, {3.963169210533558*^9, 3.963169224594801*^9}},
+ CellLabel->
+  "In[132]:=",ExpressionUUID->"afb4f082-8bc6-42aa-968a-507ceb8abe2d"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{"filter", " ", "out", " ", "0"}], "+", " ", 
+    RowBox[{"and", " ", "0"}], "-", " ", 
+    RowBox[{"terms", " ", "from", " ", "mutated", " ", "results"}]}], "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"filterZeroTerms", "[", "chromosome_List", "]"}], ":=", 
+   RowBox[{"Select", "[", 
+    RowBox[{"chromosome", ",", 
+     RowBox[{
+      RowBox[{"!", 
+       RowBox[{"StringMatchQ", "[", 
+        RowBox[{"#", ",", 
+         RowBox[{"\"\<0+\>\"", "|", "\"\<0-\>\""}]}], "]"}]}], "&"}]}], 
+    "]"}]}]}]], "Input",
+ CellChangeTimes->{{3.9631531439798803`*^9, 3.963153227140023*^9}},
+ CellLabel->
+  "In[133]:=",ExpressionUUID->"82f5e3df-8bd0-40d7-9d59-c683b0a8cce1"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"imposing", " ", "the", " ", "conversiong_\[Epsilon]", 
+      RowBox[{"(", "n", ")"}], " ", "to", " ", 
+      RowBox[{"g", "^", 
+       RowBox[{"\[Epsilon]", "'"}]}], 
+      RowBox[{"(", "n", ")"}], " ", "using", " ", "g_\[Epsilon]", 
+      RowBox[{"(", "n", ")"}]}], "=", 
+     RowBox[{
+      RowBox[{"g", "^", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"(", 
+           RowBox[{"-", "1"}], ")"}], "^", 
+          RowBox[{"{", 
+           RowBox[{"n", "-", "1"}], "}"}]}], "\[Epsilon]"}], "}"}]}], 
+      RowBox[{"(", "n", ")"}]}]}], ";", " ", 
+    RowBox[{
+    "Note", " ", "that", " ", "all", " ", "final", " ", "terms", " ", "are", 
+     " ", "in", " ", 
+     RowBox[{"g", "^", "\[Epsilon]"}], " ", "format"}]}], "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"convertToGSubEpsilon", "[", 
+    RowBox[{"n_Integer", ",", "currentEpsilon_String"}], "]"}], ":=", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", "signFactor", "}"}], ",", 
+     RowBox[{
+      RowBox[{"signFactor", "=", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"-", "1"}], ")"}], "^", 
+        RowBox[{"(", 
+         RowBox[{"n", "-", "1"}], ")"}]}]}], ";", 
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{"signFactor", "==", "1"}], ",", "currentEpsilon", ",", 
+        "\[IndentingNewLine]", 
+        RowBox[{"If", "[", 
+         RowBox[{
+          RowBox[{"currentEpsilon", "==", "\"\<+\>\""}], ",", "\"\<-\>\"", 
+          ",", "\"\<+\>\""}], "]"}]}], "]"}]}]}], "]"}]}]}]], "Input",
+ CellChangeTimes->{{3.963153243856804*^9, 3.9631534450096273`*^9}},
+ CellLabel->
+  "In[134]:=",ExpressionUUID->"bc36aac6-b5b7-42f6-a9a0-e9bfe2416ecb"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{"apply", " ", "mutations", " ", "given", " ", "by", " ", 
+    RowBox[{"Eqs", ".", " ", 
+     RowBox[{"(", 
+      RowBox[{"8.1", "-", "8.3"}], ")"}]}], " ", "above"}], "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"applyMutation", "[", 
+     RowBox[{
+     "chromosome_List", ",", "mutationType_String", ",", "m_Integer", ",", 
+      "n_Integer"}], "]"}], ":=", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"results", "=", 
+         RowBox[{"{", "}"}]}], ",", "newChromosome", ",", "term1", ",", 
+        "term2", ",", "eps1", ",", "eps2", ",", "newTerm1", ",", "newTerm2", 
+        ",", "remainingTerms", ",", "m1", ",", "m2"}], "}"}], ",", 
+      RowBox[{
+       RowBox[{"If", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"MemberQ", "[", 
+           RowBox[{
+            RowBox[{"{", 
+             RowBox[{"\"\<8.1\>\"", ",", "\"\<8.3\>\""}], "}"}], ",", 
+            "mutationType"}], "]"}], "&&", 
+          RowBox[{"m", ">", "n"}]}], ",", 
+         RowBox[{
+          RowBox[{
+          "Print", "[", 
+           "\"\<Error: For mutation types 8.1 and 8.3, must have m \
+\[LessEqual] n\>\"", "]"}], ";", "\[IndentingNewLine]", 
+          RowBox[{"Return", "[", 
+           RowBox[{"{", "}"}], "]"}]}]}], "]"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"If", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"mutationType", "==", "\"\<8.2\>\""}], "&&", 
+          RowBox[{"(", 
+           RowBox[{
+            RowBox[{"m", "<=", "1"}], "||", 
+            RowBox[{"m", ">", "n"}]}], ")"}]}], ",", 
+         RowBox[{
+          RowBox[{
+          "Print", "[", 
+           "\"\<Error: For mutation type 8.2, must have 1 < m \[LessEqual] \
+n\>\"", "]"}], ";", "\[IndentingNewLine]", 
+          RowBox[{"Return", "[", 
+           RowBox[{"{", "}"}], "]"}]}]}], "]"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"Do", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"term1", "=", 
+           RowBox[{"chromosome", "[", 
+            RowBox[{"[", "i", "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+          RowBox[{"term2", "=", 
+           RowBox[{"chromosome", "[", 
+            RowBox[{"[", "j", "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+          RowBox[{
+           RowBox[{"{", 
+            RowBox[{"m1", ",", "eps1"}], "}"}], "=", 
+           RowBox[{"parseTerm", "[", "term1", "]"}]}], ";", 
+          "\[IndentingNewLine]", 
+          RowBox[{
+           RowBox[{"{", 
+            RowBox[{"m2", ",", "eps2"}], "}"}], "=", 
+           RowBox[{"parseTerm", "[", "term2", "]"}]}], ";", 
+          "\[IndentingNewLine]", 
+          RowBox[{"(*", 
+           RowBox[{
+           "Check", " ", "if", " ", "this", " ", "pair", " ", "matches", " ", 
+            "the", " ", "mutation", " ", "pattern"}], "*)"}], 
+          RowBox[{"If", "[", 
+           RowBox[{
+            RowBox[{"mutationType", "==", "\"\<8.1\>\""}], ",", 
+            RowBox[{"If", "[", 
+             RowBox[{
+              RowBox[{"(", 
+               RowBox[{
+                RowBox[{"(", 
+                 RowBox[{
+                  RowBox[{"m1", "==", "m"}], "&&", 
+                  RowBox[{"m2", "==", "n"}], "&&", 
+                  RowBox[{"eps1", "!=", "eps2"}]}], ")"}], "||", 
+                RowBox[{"(", 
+                 RowBox[{
+                  RowBox[{"m1", "==", "n"}], "&&", 
+                  RowBox[{"m2", "==", "m"}], "&&", 
+                  RowBox[{"eps1", "!=", "eps2"}]}], ")"}]}], ")"}], ",", 
+              RowBox[{
+               RowBox[{"remainingTerms", "=", 
+                RowBox[{"Delete", "[", 
+                 RowBox[{"chromosome", ",", 
+                  RowBox[{"{", 
+                   RowBox[{
+                    RowBox[{"{", "i", "}"}], ",", 
+                    RowBox[{"{", "j", "}"}]}], "}"}]}], "]"}]}], ";", 
+               "\[IndentingNewLine]", 
+               RowBox[{"If", "[", 
+                RowBox[{
+                 RowBox[{"m1", "==", "m"}], ",", "\[IndentingNewLine]", 
+                 RowBox[{
+                  RowBox[{"newEps2", "=", "eps1"}], ";", 
+                  "\[IndentingNewLine]", 
+                  RowBox[{"newEps1", " ", "=", "eps2"}], ";", 
+                  "\[IndentingNewLine]", 
+                  RowBox[{"newTerm1", "=", 
+                   RowBox[{"makeTerm", "[", 
+                    RowBox[{
+                    RowBox[{"m", "-", "1"}], ",", "newEps1"}], "]"}]}], ";", 
+                  "\[IndentingNewLine]", 
+                  RowBox[{"newTerm2", "=", 
+                   RowBox[{"makeTerm", "[", 
+                    RowBox[{
+                    RowBox[{"n", "+", "1"}], ",", "newEps2"}], "]"}]}], ";"}],
+                  ",", "\[IndentingNewLine]", 
+                 RowBox[{
+                  RowBox[{"newEps2", "=", "eps2"}], ";", 
+                  "\[IndentingNewLine]", 
+                  RowBox[{"newEps1", " ", "=", "eps1"}], ";", 
+                  "\[IndentingNewLine]", 
+                  RowBox[{"newTerm1", "=", 
+                   RowBox[{"makeTerm", "[", 
+                    RowBox[{
+                    RowBox[{"m", "-", "1"}], ",", "newEps1"}], "]"}]}], ";", 
+                  "\[IndentingNewLine]", 
+                  RowBox[{"newTerm2", "=", 
+                   RowBox[{"makeTerm", "[", 
+                    RowBox[{
+                    RowBox[{"n", "+", "1"}], ",", "newEps2"}], "]"}]}], 
+                  ";"}]}], "]"}], ";", "\[IndentingNewLine]", 
+               RowBox[{"newChromosome", "=", 
+                RowBox[{"Join", "[", 
+                 RowBox[{"remainingTerms", ",", 
+                  RowBox[{"{", 
+                   RowBox[{"newTerm1", ",", "newTerm2"}], "}"}]}], "]"}]}], 
+               ";", "\[IndentingNewLine]", 
+               RowBox[{"AppendTo", "[", 
+                RowBox[{"results", ",", "newChromosome"}], "]"}], ";"}]}], 
+             "]"}]}], "]"}], ";", "\[IndentingNewLine]", 
+          RowBox[{"If", "[", 
+           RowBox[{
+            RowBox[{"mutationType", "==", "\"\<8.2\>\""}], ",", 
+            RowBox[{"If", "[", 
+             RowBox[{
+              RowBox[{"(", 
+               RowBox[{
+                RowBox[{"(", 
+                 RowBox[{
+                  RowBox[{"m1", "==", "m"}], "&&", 
+                  RowBox[{"m2", "==", "n"}], "&&", 
+                  RowBox[{"eps1", "==", "eps2"}]}], ")"}], "||", 
+                RowBox[{"(", 
+                 RowBox[{
+                  RowBox[{"m1", "==", "n"}], "&&", 
+                  RowBox[{"m2", "==", "m"}], "&&", 
+                  RowBox[{"eps1", "==", "eps2"}]}], ")"}]}], ")"}], ",", 
+              RowBox[{
+               RowBox[{"remainingTerms", "=", 
+                RowBox[{"Delete", "[", 
+                 RowBox[{"chromosome", ",", 
+                  RowBox[{"{", 
+                   RowBox[{
+                    RowBox[{"{", "i", "}"}], ",", 
+                    RowBox[{"{", "j", "}"}]}], "}"}]}], "]"}]}], ";", 
+               "\[IndentingNewLine]", 
+               RowBox[{"newTerm1", "=", 
+                RowBox[{"makeTerm", "[", 
+                 RowBox[{
+                  RowBox[{"m", "-", "2"}], ",", "eps1"}], "]"}]}], ";", 
+               "\[IndentingNewLine]", 
+               RowBox[{"newTerm2", "=", 
+                RowBox[{"makeTerm", "[", 
+                 RowBox[{
+                  RowBox[{"n", "+", "2"}], ",", "eps1"}], "]"}]}], ";", 
+               "\[IndentingNewLine]", 
+               RowBox[{"newChromosome", "=", 
+                RowBox[{"Join", "[", 
+                 RowBox[{"remainingTerms", ",", 
+                  RowBox[{"{", 
+                   RowBox[{"newTerm1", ",", "newTerm2"}], "}"}]}], "]"}]}], 
+               ";", "\[IndentingNewLine]", 
+               RowBox[{"AppendTo", "[", 
+                RowBox[{"results", ",", "newChromosome"}], "]"}], ";"}]}], 
+             "]"}]}], "]"}], ";", "\[IndentingNewLine]", 
+          RowBox[{"If", "[", 
+           RowBox[{
+            RowBox[{"mutationType", "==", "\"\<8.3\>\""}], ",", 
+            "\[IndentingNewLine]", 
+            RowBox[{"Module", "[", 
+             RowBox[{
+              RowBox[{"{", 
+               RowBox[{
+               "gSubEpsM", ",", "gSubEpsN", ",", "requiredEpsM", ",", 
+                "requiredEpsN"}], "}"}], ",", 
+              RowBox[{
+               RowBox[{"gSubEpsM", "=", 
+                RowBox[{"convertToGSubEpsilon", "[", 
+                 RowBox[{"m1", ",", "eps1"}], "]"}]}], ";", 
+               "\[IndentingNewLine]", 
+               RowBox[{"gSubEpsN", "=", 
+                RowBox[{"convertToGSubEpsilon", "[", 
+                 RowBox[{"m2", ",", "eps2"}], "]"}]}], ";", 
+               RowBox[{"If", "[", 
+                RowBox[{
+                 RowBox[{"(", 
+                  RowBox[{
+                   RowBox[{"(", 
+                    RowBox[{
+                    RowBox[{"m1", "==", "m"}], "&&", 
+                    RowBox[{"m2", "==", "n"}], "&&", 
+                    RowBox[{"gSubEpsM", "!=", "gSubEpsN"}]}], ")"}], "||", 
+                   RowBox[{"(", 
+                    RowBox[{
+                    RowBox[{"m1", "==", "n"}], "&&", 
+                    RowBox[{"m2", "==", "m"}], "&&", 
+                    RowBox[{"gSubEpsM", "!=", "gSubEpsN"}]}], ")"}]}], ")"}], 
+                 ",", 
+                 RowBox[{
+                  RowBox[{"remainingTerms", "=", 
+                   RowBox[{"Delete", "[", 
+                    RowBox[{"chromosome", ",", 
+                    RowBox[{"{", 
+                    RowBox[{
+                    RowBox[{"{", "i", "}"}], ",", 
+                    RowBox[{"{", "j", "}"}]}], "}"}]}], "]"}]}], ";", 
+                  "\[IndentingNewLine]", 
+                  RowBox[{"If", "[", 
+                   RowBox[{
+                    RowBox[{"m1", "==", "m"}], ",", 
+                    RowBox[{
+                    RowBox[{"Module", "[", 
+                    RowBox[{
+                    RowBox[{"{", 
+                    RowBox[{"newEps1", ",", "newEps2"}], "}"}], ",", 
+                    RowBox[{
+                    RowBox[{"newEps1", "=", 
+                    RowBox[{"If", "[", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"(", 
+                    RowBox[{"-", "1"}], ")"}], "^", 
+                    RowBox[{"(", 
+                    RowBox[{"m", "-", "2"}], ")"}]}], "==", "1"}], ",", 
+                    RowBox[{"If", "[", 
+                    RowBox[{
+                    RowBox[{"gSubEpsM", "==", "\"\<+\>\""}], ",", "\"\<-\>\"",
+                     ",", "\"\<+\>\""}], "]"}], ",", "gSubEpsM"}], "  ", 
+                    "]"}]}], ";", "\[IndentingNewLine]", 
+                    RowBox[{"newEps2", "=", 
+                    RowBox[{"If", "[", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"(", 
+                    RowBox[{"-", "1"}], ")"}], "^", "n"}], "==", "1"}], ",", 
+                    "gSubEpsM", ",", 
+                    RowBox[{"If", "[", 
+                    RowBox[{
+                    RowBox[{"gSubEpsM", "==", "\"\<+\>\""}], ",", "\"\<-\>\"",
+                     ",", "\"\<+\>\""}], "]"}]}], "  ", "]"}]}], ";", 
+                    "\[IndentingNewLine]", 
+                    RowBox[{"newTerm1", "=", 
+                    RowBox[{"makeTerm", "[", 
+                    RowBox[{
+                    RowBox[{"m", "-", "1"}], ",", "newEps1"}], "]"}]}], ";", 
+                    "\[IndentingNewLine]", 
+                    RowBox[{"newTerm2", "=", 
+                    RowBox[{"makeTerm", "[", 
+                    RowBox[{
+                    RowBox[{"n", "+", "1"}], ",", "newEps2"}], "]"}]}], 
+                    ";"}]}], "]"}], ";"}], ",", 
+                    RowBox[{
+                    RowBox[{"Module", "[", 
+                    RowBox[{
+                    RowBox[{"{", 
+                    RowBox[{"newEps1", ",", "newEps2"}], "}"}], ",", 
+                    RowBox[{
+                    RowBox[{"newEps1", "=", 
+                    RowBox[{"If", "[", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"(", 
+                    RowBox[{"-", "1"}], ")"}], "^", 
+                    RowBox[{"(", 
+                    RowBox[{"m", "-", "2"}], ")"}]}], "==", "1"}], ",", 
+                    RowBox[{"If", "[", 
+                    RowBox[{
+                    RowBox[{"gSubEpsN", "==", "\"\<+\>\""}], ",", "\"\<-\>\"",
+                     ",", "\"\<+\>\""}], "]"}], ",", "gSubEpsN"}], "]"}]}], 
+                    ";", "\[IndentingNewLine]", 
+                    RowBox[{"newEps2", "=", 
+                    RowBox[{"If", "[", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"(", 
+                    RowBox[{"-", "1"}], ")"}], "^", "n"}], "==", "1"}], ",", 
+                    "gSubEpsN", ",", 
+                    RowBox[{"If", "[", 
+                    RowBox[{
+                    RowBox[{"gSubEpsN", "==", "\"\<+\>\""}], ",", "\"\<-\>\"",
+                     ",", "\"\<+\>\""}], "]"}]}], "]"}]}], ";", 
+                    "\[IndentingNewLine]", 
+                    RowBox[{"newTerm1", "=", 
+                    RowBox[{"makeTerm", "[", 
+                    RowBox[{
+                    RowBox[{"m", "-", "1"}], ",", "newEps1"}], "]"}]}], ";", 
+                    "\[IndentingNewLine]", 
+                    RowBox[{"newTerm2", "=", 
+                    RowBox[{"makeTerm", "[", 
+                    RowBox[{
+                    RowBox[{"n", "+", "1"}], ",", "newEps2"}], "]"}]}], 
+                    ";"}]}], "]"}], ";"}]}], "]"}], ";", 
+                  "\[IndentingNewLine]", 
+                  RowBox[{"newChromosome", "=", 
+                   RowBox[{"Join", "[", 
+                    RowBox[{"remainingTerms", ",", 
+                    RowBox[{"{", 
+                    RowBox[{"newTerm1", ",", "newTerm2"}], "}"}]}], "]"}]}], 
+                  ";", "\[IndentingNewLine]", 
+                  RowBox[{"AppendTo", "[", 
+                   RowBox[{"results", ",", "newChromosome"}], "]"}], ";"}]}], 
+                "]"}]}]}], "]"}]}], "]"}], ";"}], ",", 
+         RowBox[{"{", 
+          RowBox[{"i", ",", "1", ",", 
+           RowBox[{
+            RowBox[{"Length", "[", "chromosome", "]"}], "-", "1"}]}], "}"}], 
+         ",", 
+         RowBox[{"{", 
+          RowBox[{"j", ",", 
+           RowBox[{"i", "+", "1"}], ",", 
+           RowBox[{"Length", "[", "chromosome", "]"}]}], "}"}]}], "]"}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"Map", "[", 
+        RowBox[{"filterZeroTerms", ",", "results"}], "]"}]}]}], "]"}]}], 
+   "\[IndentingNewLine]"}]}]], "Input",
+ CellChangeTimes->{{3.963157294402622*^9, 3.96315732372926*^9}, {
+   3.963157732962933*^9, 3.963157746286086*^9}, {3.963157926209323*^9, 
+   3.963157954913888*^9}, 3.963158056681394*^9, {3.963158099520574*^9, 
+   3.96315815613248*^9}, {3.963158196704146*^9, 3.963158223955083*^9}, {
+   3.963158525006464*^9, 3.96315854558456*^9}, {3.963159010846272*^9, 
+   3.9631590261902103`*^9}, {3.96315918269152*^9, 3.963159197635571*^9}, {
+   3.963159445796861*^9, 3.963159484954856*^9}, 3.963159646673716*^9, {
+   3.96316528225918*^9, 3.963165285630023*^9}, {3.963165341914504*^9, 
+   3.96316540729206*^9}, {3.963165538412891*^9, 3.963165546370576*^9}, {
+   3.9631656792633142`*^9, 3.963165681961911*^9}, {3.9631661978697157`*^9, 
+   3.963166288353183*^9}, {3.963166481300381*^9, 3.963166549620772*^9}, {
+   3.963167385913453*^9, 3.9631674229856386`*^9}, {3.963168375883477*^9, 
+   3.963168434044127*^9}, 3.963168515136137*^9},
+ CellLabel->
+  "In[135]:=",ExpressionUUID->"fdc1b6ba-8e2a-4627-94be-731a7eeb4de2"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "find", " ", "all", " ", "possible", " ", "mutations", " ", "from", " ", 
+    "a", " ", "given", " ", "chromosome"}], "*)"}], 
+  RowBox[{
+   RowBox[{"findAllMutations", "[", 
+    RowBox[{"chromosome_List", ",", 
+     RowBox[{"maxValue_Integer", ":", "40"}]}], "]"}], ":=", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"allMutations", "=", 
+        RowBox[{"{", "}"}]}], ",", "results"}], "}"}], ",", 
+     RowBox[{
+      RowBox[{"Do", "[", 
+       RowBox[{
+        RowBox[{"Do", "[", 
+         RowBox[{
+          RowBox[{"Do", "[", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"If", "[", 
+              RowBox[{
+               RowBox[{
+                RowBox[{"mutationType", "==", "\"\<8.2\>\""}], "&&", 
+                RowBox[{"m", "<=", "1"}]}], ",", 
+               RowBox[{"Continue", "[", "]"}]}], "]"}], ";", 
+             RowBox[{"If", "[", 
+              RowBox[{
+               RowBox[{
+                RowBox[{"MemberQ", "[", 
+                 RowBox[{
+                  RowBox[{"{", 
+                   RowBox[{"\"\<8.1\>\"", ",", "\"\<8.3\>\""}], "}"}], ",", 
+                  "mutationType"}], "]"}], "&&", 
+                RowBox[{"m", "<", "0"}]}], ",", " ", 
+               RowBox[{"Continue", "[", "]"}]}], "]"}], ";", 
+             "\[IndentingNewLine]", 
+             RowBox[{"results", "=", 
+              RowBox[{"applyMutation", "[", 
+               RowBox[{
+               "chromosome", ",", "mutationType", ",", "m", ",", "n"}], 
+               "]"}]}], ";", "\[IndentingNewLine]", 
+             RowBox[{"If", "[", 
+              RowBox[{
+               RowBox[{
+                RowBox[{"Length", "[", "results", "]"}], ">", "0"}], ",", 
+               RowBox[{"AppendTo", "[", 
+                RowBox[{"allMutations", ",", 
+                 RowBox[{"{", 
+                  RowBox[{
+                  "mutationType", ",", "m", ",", "n", ",", "results"}], 
+                  "}"}]}], "]"}]}], "]"}], ";"}], ",", 
+            RowBox[{"{", 
+             RowBox[{"n", ",", "m", ",", "maxValue"}], "}"}]}], "]"}], ",", 
+          RowBox[{"{", 
+           RowBox[{"m", ",", "1", ",", "maxValue"}], "}"}]}], "]"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"mutationType", ",", 
+          RowBox[{"{", 
+           RowBox[{"\"\<8.1\>\"", ",", "\"\<8.2\>\"", ",", "\"\<8.3\>\""}], 
+           "}"}]}], "}"}]}], "]"}], ";", "\[IndentingNewLine]", 
+      "allMutations"}]}], "]"}]}]}]], "Input",
+ CellChangeTimes->{
+  3.9631632793341913`*^9, {3.963165967884053*^9, 3.963165974831959*^9}, {
+   3.963166026620973*^9, 3.9631660693856897`*^9}, 3.963166300960746*^9, {
+   3.963167368827983*^9, 3.963167372041358*^9}, 3.963167403746707*^9, 
+   3.9631684801121693`*^9, {3.963170424206923*^9, 3.963170434146432*^9}, {
+   3.9631714031895657`*^9, 3.963171403312747*^9}},
+ CellLabel->
+  "In[136]:=",ExpressionUUID->"3a79c162-9609-472e-902f-d377ff338c6c"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{"create", " ", "directed", " ", "mutation", " ", 
+    RowBox[{"tree", ":", " ", 
+     RowBox[{"inputs", 
+      RowBox[{"(", 
+       RowBox[{"startchromosoms", ",", " ", 
+        RowBox[{"maxdepth", " ", "of", " ", "tree"}], ",", " ", "max_m"}], 
+       ")"}]}]}]}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"createDirectedMutationTree", "[", 
+    RowBox[{"startChromosome_List", ",", 
+     RowBox[{"maxDepth_Integer", ":", "10"}], ",", 
+     RowBox[{"maxValue_Integer", ":", "40"}]}], "]"}], ":=", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "currentLevel", ",", "allNodes", ",", "allEdges", ",", "depth", ",", 
+       "nodeCounter", ",", "nodeMap", ",", "nodeLevels"}], "}"}], ",", 
+     RowBox[{
+      RowBox[{"currentLevel", "=", 
+       RowBox[{"{", "startChromosome", "}"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"allNodes", "=", 
+       RowBox[{"{", "startChromosome", "}"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"allEdges", "=", 
+       RowBox[{"{", "}"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"nodeCounter", "=", "1"}], ";", "\[IndentingNewLine]", 
+      RowBox[{"nodeMap", "=", 
+       RowBox[{"<|", 
+        RowBox[{
+         RowBox[{"ToString", "[", "startChromosome", "]"}], "->", "1"}], 
+        "|>"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"nodeLevels", "=", 
+       RowBox[{"<|", 
+        RowBox[{"1", "->", "0"}], "|>"}]}], ";", 
+      RowBox[{"For", "[", 
+       RowBox[{
+        RowBox[{"depth", "=", "0"}], ",", 
+        RowBox[{"depth", "<", "maxDepth"}], ",", 
+        RowBox[{"depth", "++"}], ",", 
+        RowBox[{"Module", "[", 
+         RowBox[{
+          RowBox[{"{", "nextLevel", "}"}], ",", 
+          RowBox[{
+           RowBox[{"nextLevel", "=", 
+            RowBox[{"{", "}"}]}], ";", "\[IndentingNewLine]", 
+           RowBox[{"Do", "[", 
+            RowBox[{
+             RowBox[{"Module", "[", 
+              RowBox[{
+               RowBox[{"{", 
+                RowBox[{"mutations", ",", "parentKey", ",", "parentID"}], 
+                "}"}], ",", 
+               RowBox[{
+                RowBox[{"parentKey", "=", 
+                 RowBox[{"ToString", "[", 
+                  RowBox[{"sortChromosomeCompact", "[", "chromosome", "]"}], 
+                  "]"}]}], ";", "\[IndentingNewLine]", 
+                RowBox[{"parentID", "=", 
+                 RowBox[{"nodeMap", "[", "parentKey", "]"}]}], ";", 
+                "\[IndentingNewLine]", 
+                RowBox[{"mutations", "=", 
+                 RowBox[{"findAllMutations", "[", 
+                  RowBox[{
+                   RowBox[{"sortChromosomeCompact", "[", "chromosome", "]"}], 
+                   ",", "maxValue"}], "]"}]}], ";", "\[IndentingNewLine]", 
+                RowBox[{"Do", "[", 
+                 RowBox[{
+                  RowBox[{"Module", "[", 
+                   RowBox[{
+                    RowBox[{"{", 
+                    RowBox[{
+                    "mutationType", ",", "m", ",", "n", ",", "results"}], 
+                    "}"}], ",", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"{", 
+                    RowBox[{
+                    "mutationType", ",", "m", ",", "n", ",", "results"}], 
+                    "}"}], "=", "mutation"}], ";", "\[IndentingNewLine]", 
+                    RowBox[{"Do", "[", 
+                    RowBox[{
+                    RowBox[{"Module", "[", 
+                    RowBox[{
+                    RowBox[{"{", 
+                    RowBox[{"childKey", ",", "childID"}], "}"}], ",", 
+                    RowBox[{
+                    RowBox[{"childKey", "=", 
+                    RowBox[{"ToString", "[", 
+                    RowBox[{"sortChromosomeCompact", "[", "result", "]"}], 
+                    "]"}]}], ";", "\[IndentingNewLine]", 
+                    RowBox[{"If", "[", 
+                    RowBox[{
+                    RowBox[{"!", 
+                    RowBox[{"KeyExistsQ", "[", 
+                    RowBox[{"nodeMap", ",", "childKey"}], "]"}]}], ",", 
+                    RowBox[{
+                    RowBox[{"AppendTo", "[", 
+                    RowBox[{"allNodes", ",", 
+                    RowBox[{"sortChromosomeCompact", "[", "result", "]"}]}], 
+                    "]"}], ";", "\[IndentingNewLine]", 
+                    RowBox[{
+                    RowBox[{"nodeMap", "[", "childKey", "]"}], "=", 
+                    RowBox[{"++", "nodeCounter"}]}], ";", 
+                    "\[IndentingNewLine]", 
+                    RowBox[{
+                    RowBox[{"nodeLevels", "[", "nodeCounter", "]"}], "=", 
+                    RowBox[{"depth", "+", "1"}]}], ";"}]}], "]"}], ";", 
+                    "\[IndentingNewLine]", 
+                    RowBox[{"childID", "=", 
+                    RowBox[{"nodeMap", "[", "childKey", "]"}]}], ";", 
+                    RowBox[{"AppendTo", "[", 
+                    RowBox[{"allEdges", ",", 
+                    RowBox[{"<|", 
+                    RowBox[{
+                    RowBox[{"\"\<from\>\"", "->", "parentID"}], ",", 
+                    RowBox[{"\"\<to\>\"", "->", "childID"}], ",", 
+                    RowBox[{"\"\<mutationType\>\"", "->", "mutationType"}], 
+                    ",", 
+                    RowBox[{"\"\<m\>\"", "->", "m"}], ",", 
+                    RowBox[{"\"\<n\>\"", "->", "n"}], ",", 
+                    RowBox[{"\"\<fromLevel\>\"", "->", "depth"}], ",", 
+                    RowBox[{"\"\<toLevel\>\"", "->", 
+                    RowBox[{"depth", "+", "1"}]}], ",", 
+                    RowBox[{"\"\<label\>\"", "->", 
+                    RowBox[{"mutationType", "<>", "\"\<\\n(m=\>\"", "<>", 
+                    RowBox[{"ToString", "[", "m", "]"}], "<>", "\"\<,n=\>\"", 
+                    "<>", 
+                    RowBox[{"ToString", "[", "n", "]"}], "<>", 
+                    "\"\<)\>\""}]}]}], "|>"}]}], "]"}], ";", 
+                    "\[IndentingNewLine]", 
+                    RowBox[{"AppendTo", "[", 
+                    RowBox[{"nextLevel", ",", "result"}], "]"}], ";"}]}], 
+                    "]"}], ",", 
+                    RowBox[{"{", 
+                    RowBox[{"result", ",", "results"}], "}"}]}], "]"}]}]}], 
+                   "]"}], ",", 
+                  RowBox[{"{", 
+                   RowBox[{"mutation", ",", "mutations"}], "}"}]}], "]"}]}]}],
+               "]"}], ",", 
+             RowBox[{"{", 
+              RowBox[{"chromosome", ",", "currentLevel"}], "}"}]}], "]"}], 
+           ";", "\[IndentingNewLine]", 
+           RowBox[{"currentLevel", "=", 
+            RowBox[{"DeleteDuplicates", "[", "nextLevel", "]"}]}], ";"}]}], 
+         "]"}]}], "]"}], ";", "\[IndentingNewLine]", 
+      RowBox[{"{", 
+       RowBox[{"allNodes", ",", 
+        RowBox[{"Select", "[", 
+         RowBox[{"allEdges", ",", 
+          RowBox[{
+           RowBox[{"!", 
+            RowBox[{"MissingQ", "[", 
+             RowBox[{"#", "[", "\"\<from\>\"", "]"}], "]"}]}], "&"}]}], "]"}],
+         ",", "nodeMap", ",", "nodeLevels"}], "}"}]}]}], "]"}]}]}]], "Input",
+ CellChangeTimes->{{3.96316189066573*^9, 3.963161942517435*^9}, {
+  3.963161973966146*^9, 3.963162002708744*^9}, {3.963163206851853*^9, 
+  3.963163207403737*^9}, {3.963170104555897*^9, 3.963170140914338*^9}, {
+  3.963170244857037*^9, 3.963170250454541*^9}, {3.963170315310203*^9, 
+  3.963170337639511*^9}, {3.963170607880484*^9, 3.963170616351028*^9}, {
+  3.963171390820293*^9, 3.963171391002272*^9}},
+ CellLabel->
+  "In[137]:=",ExpressionUUID->"237d1f94-5edb-4e25-87c1-3a6d4f8f695e"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "create", " ", "mutation", " ", "tree", " ", "with", " ", "given", " ", 
+    "depth", " ", "and", " ", "max", " ", "m", " ", 
+    RowBox[{"value", ".", " ", "edge"}], " ", "labels", " ", "are", " ", 
+    "mutation", " ", "equation", " ", "and", " ", "by", " ", "default", " ", 
+    "is", " ", "not", " ", "shown"}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"createGraphMutationTree", "[", 
+    RowBox[{"startChromosome_List", ",", 
+     RowBox[{"maxDepth_Integer", ":", "10"}], ",", 
+     RowBox[{"maxValue_Integer", ":", "40"}], ",", 
+     RowBox[{"showEdgeLabels_", ":", "False"}]}], "]"}], ":=", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "nodes", ",", "edges", ",", "nodeMap", ",", "nodeLevels", ",", 
+       "graphEdges", ",", "vertexLabels", ",", "uniqueEdges", ",", 
+       "edgeLabels", ",", "graphOptions"}], "}"}], ",", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"nodes", ",", "edges", ",", "nodeMap", ",", "nodeLevels"}], 
+        "}"}], "=", 
+       RowBox[{"createDirectedMutationTree", "[", 
+        RowBox[{
+         RowBox[{"sortChromosomeCompact", "[", "startChromosome", "]"}], ",", 
+         "maxDepth", ",", "maxValue"}], "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"Length", "[", "edges", "]"}], "==", "0"}], ",", 
+        RowBox[{"Return", "[", 
+         RowBox[{"Graphics", "[", 
+          RowBox[{"{", 
+           RowBox[{"Text", "[", 
+            RowBox[{
+             RowBox[{"Style", "[", 
+              RowBox[{"\"\<No mutations found\>\"", ",", 
+               RowBox[{"FontSize", "->", "14"}]}], "]"}], ",", 
+             RowBox[{"{", 
+              RowBox[{"0", ",", "0"}], "}"}]}], "]"}], "}"}], "]"}], "]"}]}], 
+       "]"}], ";", "\[IndentingNewLine]", 
+      RowBox[{"graphEdges", "=", 
+       RowBox[{"Map", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"DirectedEdge", "[", 
+           RowBox[{
+            RowBox[{"#", "[", "\"\<from\>\"", "]"}], ",", 
+            RowBox[{"#", "[", "\"\<to\>\"", "]"}]}], "]"}], "&"}], ",", 
+         "edges"}], "]"}]}], ";", 
+      RowBox[{"uniqueEdges", "=", 
+       RowBox[{"DeleteDuplicates", "[", "graphEdges", "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"vertexLabels", "=", 
+       RowBox[{"Table", "[", 
+        RowBox[{
+         RowBox[{"i", "->", 
+          RowBox[{"formatChromosome", "[", 
+           RowBox[{"nodes", "[", 
+            RowBox[{"[", "i", "]"}], "]"}], "]"}]}], ",", 
+         RowBox[{"{", 
+          RowBox[{"i", ",", 
+           RowBox[{"Length", "[", "nodes", "]"}]}], "}"}]}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"If", "[", 
+       RowBox[{"showEdgeLabels", ",", 
+        RowBox[{
+         RowBox[{"edgeLabels", "=", 
+          RowBox[{"Table", "[", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"DirectedEdge", "[", 
+              RowBox[{
+               RowBox[{
+                RowBox[{"edges", "[", 
+                 RowBox[{"[", "i", "]"}], "]"}], "[", "\"\<from\>\"", "]"}], 
+               ",", 
+               RowBox[{
+                RowBox[{"edges", "[", 
+                 RowBox[{"[", "i", "]"}], "]"}], "[", "\"\<to\>\"", "]"}]}], 
+              "]"}], "->", 
+             RowBox[{
+              RowBox[{"edges", "[", 
+               RowBox[{"[", "i", "]"}], "]"}], "[", "\"\<label\>\"", "]"}]}], 
+            ",", 
+            RowBox[{"{", 
+             RowBox[{"i", ",", 
+              RowBox[{"Length", "[", "edges", "]"}]}], "}"}]}], "]"}]}], ";", 
+         "\[IndentingNewLine]", 
+         RowBox[{"edgeLabels", "=", 
+          RowBox[{"DeleteDuplicatesBy", "[", 
+           RowBox[{"edgeLabels", ",", "First"}], "]"}]}], ";", 
+         "\[IndentingNewLine]", 
+         RowBox[{"graphOptions", "=", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"VertexLabels", "->", "vertexLabels"}], ",", 
+            RowBox[{"(*", 
+             RowBox[{
+              RowBox[{"VertexLabelStyle", "->", "20"}], ","}], "*)"}], 
+            RowBox[{"EdgeLabels", "->", "edgeLabels"}], ",", 
+            RowBox[{"EdgeStyle", "->", "Blue"}], ",", 
+            RowBox[{"VertexStyle", "->", "Black"}], ",", 
+            RowBox[{"GraphLayout", "->", "\"\<LayeredDigraphEmbedding\>\""}], 
+            ",", 
+            RowBox[{"PlotLabel", "->", 
+             RowBox[{"Style", "[", 
+              RowBox[{
+               RowBox[{"\"\<Mutation Tree: \>\"", "<>", 
+                RowBox[{"formatChromosome", "[", "startChromosome", "]"}]}], 
+               ",", "Bold", ",", 
+               RowBox[{"FontSize", "->", "17"}]}], "]"}]}], ",", 
+            RowBox[{"ImageSize", "->", "Large"}], ",", 
+            RowBox[{"VertexSize", "->", "Small"}]}], "}"}]}]}], ",", 
+        RowBox[{"graphOptions", "=", 
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"VertexLabels", "->", "vertexLabels"}], ",", 
+           RowBox[{"(*", 
+            RowBox[{
+             RowBox[{"VertexLabelStyle", "->", "20"}], ","}], "*)"}], 
+           RowBox[{"EdgeStyle", "->", "Blue"}], ",", 
+           RowBox[{"VertexStyle", "->", "Black"}], ",", 
+           RowBox[{"GraphLayout", "->", "\"\<LayeredDigraphEmbedding\>\""}], 
+           ",", 
+           RowBox[{"PlotLabel", "->", 
+            RowBox[{"Style", "[", 
+             RowBox[{
+              RowBox[{"\"\<Mutation Tree: \>\"", "<>", 
+               RowBox[{"formatChromosome", "[", "startChromosome", "]"}]}], 
+              ",", "Bold", ",", 
+              RowBox[{"FontSize", "->", "17"}]}], "]"}]}], ",", 
+           RowBox[{"ImageSize", "->", "Large"}], ",", 
+           RowBox[{"VertexSize", "->", "Small"}]}], "}"}]}]}], "]"}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"ReverseGraph", "[", 
+       RowBox[{"Graph", "[", 
+        RowBox[{"uniqueEdges", ",", 
+         RowBox[{"Sequence", "@@", "graphOptions"}]}], "]"}], "]"}]}]}], 
+    "]"}]}]}]], "Input",
+ CellChangeTimes->{{3.963162406662294*^9, 3.963162464748895*^9}, {
+  3.963163200770006*^9, 3.963163201337736*^9}, {3.963164152108929*^9, 
+  3.963164154593667*^9}, {3.963164311530796*^9, 3.963164315647987*^9}, {
+  3.963164536447926*^9, 3.963164550642927*^9}, {3.963164644572301*^9, 
+  3.96316464949199*^9}, {3.963168538518392*^9, 3.963168614645578*^9}, {
+  3.96316931394901*^9, 3.963169319725611*^9}, {3.963171385369542*^9, 
+  3.963171385520958*^9}, {3.963311631239231*^9, 3.963311667198072*^9}, {
+  3.9786858249821653`*^9, 3.978685840343793*^9}, {3.9786860750083237`*^9, 
+  3.978686082043578*^9}, {3.978686144457281*^9, 3.978686152215724*^9}, {
+  3.9786865539790087`*^9, 3.978686564726997*^9}, {3.9786867175158453`*^9, 
+  3.9786867212066717`*^9}, {3.978687854448265*^9, 3.9786878686978197`*^9}},
+ CellLabel->
+  "In[138]:=",ExpressionUUID->"0499c0fc-92e9-4b9d-b5e6-b60ebe76f7ad"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "show", " ", "Graph", " ", "versions", " ", "with", " ", "flexible", " ", 
+    "parameters"}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"showMutationTrees", "[", 
+    RowBox[{"startChromosome_List", ",", 
+     RowBox[{"maxDepth_Integer", ":", "10"}], ",", 
+     RowBox[{"maxValue_Integer", ":", "10"}]}], "]"}], ":=", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"hasseDiagram", ",", "graphVersion"}], "}"}], ",", 
+     RowBox[{
+      RowBox[{"Print", "[", "\"\<MUTATION TREES - COMPARISON\>\"", "]"}], ";",
+       "\[IndentingNewLine]", 
+      RowBox[{"Print", "[", 
+       RowBox[{"\"\<Starting chromosome: \>\"", ",", 
+        RowBox[{"formatChromosome", "[", 
+         RowBox[{"sortChromosomeCompact", "[", "startChromosome", "]"}], 
+         "]"}]}], "]"}], ";", "\[IndentingNewLine]", 
+      RowBox[{"Print", "[", 
+       RowBox[{
+       "\"\<Max depth: \>\"", ",", "maxDepth", ",", "\"\<, Max value: \>\"", 
+        ",", "maxValue"}], "]"}], ";", "\[IndentingNewLine]", 
+      RowBox[{"graphVersion", "=", 
+       RowBox[{"createGraphMutationTree", "[", 
+        RowBox[{
+         RowBox[{"sortChromosomeCompact", "[", "startChromosome", "]"}], ",", 
+         "maxDepth", ",", "maxValue"}], "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"Print", "[", "graphVersion", "]"}], ";", "\[IndentingNewLine]", 
+      RowBox[{"{", 
+       RowBox[{"hasseDiagram", ",", "graphVersion"}], "}"}]}]}], 
+    "]"}]}]}]], "Input",
+ CellChangeTimes->{{3.963162496321163*^9, 3.9631625145561666`*^9}, 
+   3.963162687222361*^9, {3.963163052401037*^9, 3.963163067056484*^9}, {
+   3.963163196846217*^9, 3.963163197313108*^9}, {3.963168766802279*^9, 
+   3.963168796762033*^9}, {3.963169154269174*^9, 3.963169160829752*^9}},
+ CellLabel->
+  "In[139]:=",ExpressionUUID->"cd8cb228-7a0f-409d-acc9-64e460dcf512"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Examples :", "Section",
+ CellChangeTimes->{{3.9631711466557703`*^9, 
+  3.963171163307822*^9}},ExpressionUUID->"67853cb1-76db-4417-880d-\
+e64c3e89a540"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"X", "=", 
+     RowBox[{"{", 
+      RowBox[{
+      "\"\<1+\>\"", ",", "\"\<1-\>\"", ",", "\"\<1+\>\"", ",", " ", 
+       "\"\<1-\>\""}], "}"}]}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"showMutationTrees", "[", 
+     RowBox[{"X", ",", " ", "10", ",", " ", "10"}], "]"}], ";"}]}]}]], "Input",\
+
+ CellChangeTimes->{{3.963162648640448*^9, 3.9631626536600313`*^9}, {
+   3.963162697415187*^9, 3.9631627044691358`*^9}, {3.963162976354394*^9, 
+   3.963162976978938*^9}, {3.963163007571884*^9, 3.96316302725534*^9}, {
+   3.963163136433754*^9, 3.963163154952143*^9}, {3.963163228260591*^9, 
+   3.96316325924834*^9}, {3.963163298409644*^9, 3.963163298949277*^9}, {
+   3.963163370881687*^9, 3.96316338166315*^9}, {3.9631664016157517`*^9, 
+   3.963166402368183*^9}, {3.963167293820306*^9, 3.96316729642552*^9}, 
+   3.963171139082646*^9},
+ CellLabel->
+  "In[140]:=",ExpressionUUID->"af08de51-39a8-4339-a35b-6c8d08e720ea"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["\<\"MUTATION TREES - COMPARISON\"\>"], "Print",
+ CellChangeTimes->{
+  3.963162709542322*^9, 3.963162978152543*^9, 3.96316302826184*^9, 
+   3.96316307135795*^9, {3.963163128801329*^9, 3.963163156003859*^9}, {
+   3.963163211053412*^9, 3.963163261010919*^9}, 3.963163300189352*^9, 
+   3.96316338287855*^9, 3.96316415793085*^9, 3.963164564600316*^9, 
+   3.963165346209072*^9, 3.963165414328925*^9, 3.96316555071414*^9, 
+   3.963165768231784*^9, {3.963165808162402*^9, 3.963165810203558*^9}, 
+   3.963165980770817*^9, 3.963166087053654*^9, {3.963166292323891*^9, 
+   3.963166304249413*^9}, 3.963166404364478*^9, 3.96316712984443*^9, 
+   3.963167304176474*^9, 3.963167426638864*^9, 3.963168287417342*^9, 
+   3.963168392877612*^9, 3.963168518741145*^9, {3.963168778408866*^9, 
+   3.96316880139353*^9}, 3.96316900457617*^9, 3.963169115451154*^9, 
+   3.963169227987245*^9, 3.963169324567053*^9, 3.963170117045868*^9, 
+   3.963170158786344*^9, {3.963170261807396*^9, 3.963170270608808*^9}, 
+   3.963170345222416*^9, 3.963170619787554*^9, 3.963171411964316*^9, 
+   3.963304132064793*^9, 3.963311671248138*^9, 3.978685661367073*^9, 
+   3.978686156760141*^9, {3.978686569132111*^9, 3.9786865758972816`*^9}, 
+   3.9786867275256767`*^9, 3.978687215749185*^9, 3.978687876366481*^9},
+ CellLabel->
+  "During evaluation of \
+In[140]:=",ExpressionUUID->"64f17000-472d-4e21-ba41-517bc008eff7"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Starting chromosome: \"\>", 
+   "\[InvisibleSpace]", "\<\"{1+ , 1+ , 1- , 1-}\"\>"}],
+  SequenceForm["Starting chromosome: ", "{1+ , 1+ , 1- , 1-}"],
+  Editable->False]], "Print",
+ CellChangeTimes->{
+  3.963162709542322*^9, 3.963162978152543*^9, 3.96316302826184*^9, 
+   3.96316307135795*^9, {3.963163128801329*^9, 3.963163156003859*^9}, {
+   3.963163211053412*^9, 3.963163261010919*^9}, 3.963163300189352*^9, 
+   3.96316338287855*^9, 3.96316415793085*^9, 3.963164564600316*^9, 
+   3.963165346209072*^9, 3.963165414328925*^9, 3.96316555071414*^9, 
+   3.963165768231784*^9, {3.963165808162402*^9, 3.963165810203558*^9}, 
+   3.963165980770817*^9, 3.963166087053654*^9, {3.963166292323891*^9, 
+   3.963166304249413*^9}, 3.963166404364478*^9, 3.96316712984443*^9, 
+   3.963167304176474*^9, 3.963167426638864*^9, 3.963168287417342*^9, 
+   3.963168392877612*^9, 3.963168518741145*^9, {3.963168778408866*^9, 
+   3.96316880139353*^9}, 3.96316900457617*^9, 3.963169115451154*^9, 
+   3.963169227987245*^9, 3.963169324567053*^9, 3.963170117045868*^9, 
+   3.963170158786344*^9, {3.963170261807396*^9, 3.963170270608808*^9}, 
+   3.963170345222416*^9, 3.963170619787554*^9, 3.963171411964316*^9, 
+   3.963304132064793*^9, 3.963311671248138*^9, 3.978685661367073*^9, 
+   3.978686156760141*^9, {3.978686569132111*^9, 3.9786865758972816`*^9}, 
+   3.9786867275256767`*^9, 3.978687215749185*^9, 3.9786878763671513`*^9},
+ CellLabel->
+  "During evaluation of \
+In[140]:=",ExpressionUUID->"6568de7a-4395-469f-a6bf-0043a53a2eba"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Max depth: \"\>", "\[InvisibleSpace]", "10", 
+   "\[InvisibleSpace]", "\<\", Max value: \"\>", "\[InvisibleSpace]", "10"}],
+  SequenceForm["Max depth: ", 10, ", Max value: ", 10],
+  Editable->False]], "Print",
+ CellChangeTimes->{
+  3.963162709542322*^9, 3.963162978152543*^9, 3.96316302826184*^9, 
+   3.96316307135795*^9, {3.963163128801329*^9, 3.963163156003859*^9}, {
+   3.963163211053412*^9, 3.963163261010919*^9}, 3.963163300189352*^9, 
+   3.96316338287855*^9, 3.96316415793085*^9, 3.963164564600316*^9, 
+   3.963165346209072*^9, 3.963165414328925*^9, 3.96316555071414*^9, 
+   3.963165768231784*^9, {3.963165808162402*^9, 3.963165810203558*^9}, 
+   3.963165980770817*^9, 3.963166087053654*^9, {3.963166292323891*^9, 
+   3.963166304249413*^9}, 3.963166404364478*^9, 3.96316712984443*^9, 
+   3.963167304176474*^9, 3.963167426638864*^9, 3.963168287417342*^9, 
+   3.963168392877612*^9, 3.963168518741145*^9, {3.963168778408866*^9, 
+   3.96316880139353*^9}, 3.96316900457617*^9, 3.963169115451154*^9, 
+   3.963169227987245*^9, 3.963169324567053*^9, 3.963170117045868*^9, 
+   3.963170158786344*^9, {3.963170261807396*^9, 3.963170270608808*^9}, 
+   3.963170345222416*^9, 3.963170619787554*^9, 3.963171411964316*^9, 
+   3.963304132064793*^9, 3.963311671248138*^9, 3.978685661367073*^9, 
+   3.978686156760141*^9, {3.978686569132111*^9, 3.9786865758972816`*^9}, 
+   3.9786867275256767`*^9, 3.978687215749185*^9, 3.97868787636792*^9},
+ CellLabel->
+  "During evaluation of \
+In[140]:=",ExpressionUUID->"e9233c62-3b46-418d-8e25-a75da6bc634d"],
+
+Cell[BoxData[
+ GraphicsBox[
+  NamespaceBox["NetworkGraphics",
+   DynamicModuleBox[{Typeset`graph = HoldComplete[
+     Graph[{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, {
+       SparseArray[
+       Automatic, {10, 10}, 0, {
+        1, {{0, 0, 1, 2, 3, 6, 8, 11, 12, 15, 18}, {{1}, {1}, {2}, {2}, {3}, {
+          6}, {2}, {3}, {2}, {3}, {6}, {3}, {4}, {5}, {7}, {5}, {7}, {8}}}, 
+         Pattern}], Null}, {EdgeStyle -> {
+         RGBColor[0, 0, 1]}, 
+       GraphLayout -> {
+        "Dimension" -> 2, "VertexLayout" -> "LayeredDigraphEmbedding"}, 
+       ImageSize -> Large, PlotLabel -> 
+       Style["Mutation Tree: {1+ , 1+ , 1- , 1-}", Bold, FontSize -> 17], 
+       VertexLabels -> {
+        8 -> "{2- , 2-}", 2 -> "{2+ , 1+ , 1-}", 1 -> "{1+ , 1+ , 1- , 1-}", 
+         4 -> "{2+ , 2+}", 5 -> "{3- , 1+}", 7 -> "{3+ , 1-}", 3 -> 
+         "{2- , 1+ , 1-}", 9 -> "{4+}", 10 -> "{4-}", 6 -> "{2+ , 2-}"}, 
+       VertexSize -> {Small}, VertexStyle -> {
+         GrayLevel[0]}}]]}, 
+    TagBox[GraphicsGroupBox[{
+       {RGBColor[0, 0, 1], Opacity[0.7], Arrowheads[Medium], 
+        ArrowBox[{{0., 1.}, {0., 0.}}, 0.05], 
+        ArrowBox[{{1., 1.}, {0., 0.}}, 0.05], 
+        ArrowBox[{{-3., 2.}, {0., 1.}}, 0.05], 
+        ArrowBox[BezierCurveBox[CompressedData["
+1:eJxTTMoPSmViYGCQAWIQDQEf9kNoDofwRL8SjQMf9oecv3H09Xx2h3l5Z/m7
+p3zcv8lDsmKXKbvDZfXaS+q1n/aL5xwUyznI5vC1J3bPv8rP+9ssLy5kcGZz
+YANr+LL/7waQBlYHtugNrNEbvu6vuwTSyOrw5bBS6oOX3/ZzgNWxOFwAWWP+
+Y/9MYVkugyfMDrNmgsDP/SbGIMDscL10oc+D67/2q87yyLnfwOTAd/fBo7Zd
+v/fvfPrlxq+rjA7258Njeh3/7P8kalHZasTokObDtvNzzp/957SEfOunMTh0
+hLz5sdPmz34/leaQF4wMDouec8o82PB7/yMWMfnGl//st7LGK6Wd/LW/oCv4
+D/+9v/aH1r3m9mn7ud/95j6H2od/7I89Wn9j4vPv+5M/hr858fm3fTHzv0U3
+1b7s38VYfzFH+Jd9Px9nV9CaD/s92llcNcN+2GtyLJL++f7Vfu6mF27/dn+z
+5zyxOma98NP9TJ+0rr92+WpftzNuXX/7/f0G109//fjhs/3cnkixVoZr+6cY
+nl4kcOCT/SmhCY9qVU7v12XUvOe+6aN98f4Vf7582rH/j+vT5dOPf7BnQAEf
+7AEJEeLX
+          "]], 0.05], ArrowBox[BezierCurveBox[CompressedData["
+1:eJxTTMoPSmViYGCQAWIQDQEf9kNoDgcYP+T8jaOv57PD+Zs8JCt2mbI7MEL5
+4jkHxXIOssHl2ywvLmRwRvD/bgBpYIXz6y6p115SR/A55uWd5e9mgfNnCsty
+GTxhhvNNjEGA2UHn2RHOi7ff758g5ce+v4nJYfMMYXWX/Pf7U55zuVbeZXSY
+JP4mPHLXu/1bZma+SXRmdDie5DdHYO/b/TWGWX8rtjA4hFdZfcksf7N/7zqe
+in0GDA4OcRviU1++2v9RadGOlIL/9k18G+4xCb/cH7U5L2Tl1H/2ct2WhU5f
+nu3fxld/2OviX3uBKz7iKr1P9rOYXmb1VP5r77Pz58JLkjf2a5rbh1gx/7bn
+YP59UfPOgf2GG+TnHuL9af/mT/bHw4u320suKHnw0Om7/ZcT/Hz2ry/ZP2Kz
+k5ux6Kv9otsKPldn3LPveVId9lTni/1iaffbNyue2EtY6nWefPjJ/tPb1Wpv
+f72wb2EJ3eZy8KP97id2HUsuvbG/5PbhbtjpD/bQ8IHTAKKIvFs=
+          "]], 0.05], ArrowBox[{{-1., 3.}, {0., 2.}}, 0.05], 
+        ArrowBox[{{0., 2.}, {0., 1.}}, 0.05], 
+        ArrowBox[{{0., 2.}, {1., 1.}}, 0.05], 
+        ArrowBox[BezierCurveBox[CompressedData["
+1:eJxTTMoPSmViYGCQAWIQDQEf7CE0hwOMH3L+xtHX89nh/E0ekhW7TNkdGKF8
+8ZyDYjkH2eDybZYXFzI4I/h/N4A0sML5dZfUay+pI/gc8/LO8nezwPkzhWW5
+DJ4ww/kmxiDA7OAbFvon5fF7+7jLWqpyDUwOZpGhHyf3vreffap2z9dLjA67
+OBju9/x7Z/9BQufnTm1Gh2spoUf9zd7ZR+wzvZ3VxeDQlxu65I7JW/s1paZH
+Be79t3+kxFBj/Ou1/SWZbXKqm//Zn28J9Qlpe2WvVPT2kNCUv/YRk0NF7W++
+sJ9denvjzYY/9tV+DNc/f3pmb6fe8Lqy8re9jI1566TUx/Z882Y7ndz00/79
+XRvxCIkH9j/z5nHr8Pywf5auJNUpdsv+98wOt0Wt3+x9ajLOrq+5Yi8sH/VZ
+W/6rvfqn6RM8jp2zd/0nJHTyxmf76j0zRc9OPmo/wXzzospNn+zl1q8JvnV4
+l/2nU1ZLbdd8tJ/Ha266+NAK+9wdKyVFj8HiCRFvAAuwsNs=
+          "]], 0.05], ArrowBox[BezierCurveBox[CompressedData["
+1:eJxTTMoPSmViYGCQAWIQDQEf7CE0h0N4ol+JxoEP9iHnbxx9PZ/dYV7eWf7u
+KR/tN3lIVuwyZXe4rF57Sb32k714zkGxnINsDl97Yvf8q/xs32Z5cSGDM5sD
+G1jDF/u/G0AaWB3YojewRm/4al93CaSR1eHLYaXUBy+/2XOA1bE4XABZY/7D
+fqawLJfBE2aHWTNB4Ke9iTEIMDvURSzhsbn7y/4K2F4mh1Xpbx59Pf/bvlDm
+OBAxOsiBqMI/9kKCIMDocLXMZOf6Q3/sN7KCLGZwuAblL/jiOf+L5397mPp7
+d0Hgrz3MPFmoeD3UvhiQs1l/28PcA6PPQ90Loz9D/QOj2aH+hdPQ8IDRsPCC
+0Zeg4QmjYeENoyOg8QGjUePrgz0AUTnXHQ==
+          "]], 0.05], ArrowBox[{{1., 3.}, {0., 2.}}, 0.05], 
+        ArrowBox[BezierCurveBox[CompressedData["
+1:eJxTTMoPSmViYGCQAWIQDQUOEIrDYbWBupVIAoNDyPkbR1/PZ3fw3/6s3fUU
+g8MmD8mKXabsDq8m272cbMfoIJ5zUCznIJtD9TG9uP97GB3aLC8uZHBmc2AG
+a2By+LsBpIHVoVn3RpPuDSaHukvqtZfUWR1+Jk40+lDC7MAxL+8sfzeLQ8ab
+R1/PS7M4zBSW5TJ4wuxwBgxYHEyMQYDZ4dWuALUP2awOqrM8cu43MDm05xUU
+Ot9lddj59MuNX1cZHRY81153TIHN4ZOoRWWrEaODsVrznUozNodzWkK+9dMY
+HFy0yv7EyLE5+Kk0h7xgZHC4+JmFr+AGq8MjFjH5xpf/7G816QtuTmF1KOgK
+/sN/7699wvWvrGqHWRzcb+5zqH34xz7pY/ibE5+ZHZLB9G/7nYz1F3OEmRx2
+gelf9m7tLK6aYQwOHmD6h70Iy8XeP+V/7bmbXrj92/3NnvlJ6Lrrnb/smT5p
+XX/t8tU+ft30148ffrc3uH7668cPn+3Vk6e5KjZ8tZ9ieHqRwIFP9pFMQXv6
+Uz7b6zJq3nPf9NH+e/cpf/3+j/Z/XJ8un378gz0knhA0ABYnwK4=
+          "]], 0.05], ArrowBox[BezierCurveBox[CompressedData["
+1:eJxTTMoPSmViYGCQAWIQDQEf9kNoAYdFvQ92r532cf+0O+wTQ2bxO7Bzrsrp
+bPq8f1/t1SWx8vwO+kUxQpMPf91f9jjDWrqfz0Hi5Pc1pyJ/7N/Feyik9yWv
+wxHeGhsD19/7+/88+LBZj9fBwOHlgcOt//Z/WX+Uvz+Ox8Fwg/zcQ7yMB16o
+F2yUq+R20DK3D7FiZj6QnfLgalIdlwOL6WVWT2XWA3WpYrXReZwOx5P85gjs
+ZT2wpMJhXpQ4p8Mi5jXbD7iwHQhZdiJUeyuHw0TxN+GRu9gOdLxbt/isO4fD
+tHl8tbdk2Q84BX5udzzP7rBphrC6Sz77gZZzU5navdkdnrD+Dp22jv2AT9o0
+4Xl72Bx0nh3hvHib/cBsia+72pTYHLotC52+fGM/UPh04w+HWlYHSLhwHDgD
+BiwO/8GA/UDam0dfz0uzwOV/JU40+lDC7MAI5bfo3mjSvcEEl2fx3/6s3RXB
+rzqmF/d/DyOc/2qy3cvJdgg+WPkpBjh/jYG6lUgCgg+NOAcA6pyt4w==
+          "]], 0.05], ArrowBox[{{-1., 4.}, {-1., 3.}}, 0.05], 
+        ArrowBox[{{-1., 4.}, {1., 3.}}, 0.05], 
+        ArrowBox[{{1., 4.}, {-1., 3.}}, 0.05], 
+        ArrowBox[{{1., 4.}, {1., 3.}}, 0.05], 
+        ArrowBox[{{1., 4.}, {2., 3.}}, 0.05]}, 
+       {GrayLevel[0], EdgeForm[{GrayLevel[0], Opacity[
+        0.7]}], {DiskBox[{0., 0.}, 0.05], 
+         InsetBox["\<\"{1+ , 1+ , 1- , 1-}\"\>", Offset[{0, -2}, {0., -0.05}],
+           ImageScaled[{0.5, 1}],
+          BaseStyle->"Graphics"]}, {DiskBox[{0., 1.}, 0.05], 
+         InsetBox["\<\"{2+ , 1+ , 1-}\"\>", {0.06812742926274111, 0.9839172955616847},
+           ImageScaled[{-0.22993674210079762, 0.6723146904105208}],
+          BaseStyle->"Graphics"]}, {DiskBox[{1., 1.}, 0.05], 
+         InsetBox["\<\"{2- , 1+ , 1-}\"\>", {1.0567869529622893, 0.9590702800735365},
+           ImageScaled[{-0.10843163888167051, 0.938532713497824}],
+          BaseStyle->"Graphics"]}, {DiskBox[{-3., 2.}, 0.05], 
+         InsetBox["\<\"{2+ , 2+}\"\>", {-3.068127429262741, 1.9839172955616846},
+           ImageScaled[{1.2299367421007976, 0.6723146904105204}],
+          BaseStyle->"Graphics"]}, {DiskBox[{-1., 3.}, 0.05], 
+         InsetBox["\<\"{3- , 1+}\"\>", {-1.0681274292627412, 2.983917295561685},
+           ImageScaled[{1.2299367421007976, 0.6723146904105204}],
+          BaseStyle->"Graphics"]}, {DiskBox[{0., 2.}, 0.05], 
+         InsetBox["\<\"{2+ , 2-}\"\>", {-0.06467156727579008, 1.9732121597344436},
+           ImageScaled[{1.192909649383465, 0.7870125742738174}],
+          BaseStyle->"Graphics"]}, {DiskBox[{1., 3.}, 0.05], 
+         InsetBox["\<\"{3+ , 1-}\"\>", {1.07, 3.}, ImageScaled[{-0.25, 0.5000000000000002}],
+          BaseStyle->"Graphics"]}, {DiskBox[{2., 3.}, 0.05], 
+         InsetBox["\<\"{2- , 2-}\"\>", {2.0690961220346247, 3.0112127570104876},
+           ImageScaled[{-0.24031559322812246, 0.3798633177447742}],
+          BaseStyle->"Graphics"]}, {DiskBox[{-1., 4.}, 0.05], 
+         InsetBox["\<\"{4+}\"\>", Offset[{0, 2}, {-1., 4.05}], ImageScaled[{0.5, 0}],
+          BaseStyle->"Graphics"]}, {DiskBox[{1., 4.}, 0.05], 
+         InsetBox["\<\"{4-}\"\>", Offset[{0, 2}, {1., 4.05}], ImageScaled[{0.5, 0}],
+          BaseStyle->"Graphics"]}}}],
+     MouseAppearanceTag["NetworkGraphics"]],
+    AllowKernelInitialization->False]],
+  DefaultBaseStyle->"NetworkGraphics",
+  FormatType->TraditionalForm,
+  FrameTicks->None,
+  ImageSize->Large,
+  PlotLabel->FormBox[
+    StyleBox[
+    "\"Mutation Tree: {1+ , 1+ , 1- , 1-}\"", Bold, FontSize -> 17, 
+     StripOnInput -> False], TraditionalForm]]], "Print",
+ CellChangeTimes->{
+  3.963162709542322*^9, 3.963162978152543*^9, 3.96316302826184*^9, 
+   3.96316307135795*^9, {3.963163128801329*^9, 3.963163156003859*^9}, {
+   3.963163211053412*^9, 3.963163261010919*^9}, 3.963163300189352*^9, 
+   3.96316338287855*^9, 3.96316415793085*^9, 3.963164564600316*^9, 
+   3.963165346209072*^9, 3.963165414328925*^9, 3.96316555071414*^9, 
+   3.963165768231784*^9, {3.963165808162402*^9, 3.963165810203558*^9}, 
+   3.963165980770817*^9, 3.963166087053654*^9, {3.963166292323891*^9, 
+   3.963166304249413*^9}, 3.963166404364478*^9, 3.96316712984443*^9, 
+   3.963167304176474*^9, 3.963167426638864*^9, 3.963168287417342*^9, 
+   3.963168392877612*^9, 3.963168518741145*^9, {3.963168778408866*^9, 
+   3.96316880139353*^9}, 3.96316900457617*^9, 3.963169115451154*^9, 
+   3.963169227987245*^9, 3.963169324567053*^9, 3.963170117045868*^9, 
+   3.963170158786344*^9, {3.963170261807396*^9, 3.963170270608808*^9}, 
+   3.963170345222416*^9, 3.963170619787554*^9, 3.963171411964316*^9, 
+   3.963304132064793*^9, 3.963311671248138*^9, 3.978685661367073*^9, 
+   3.978686156760141*^9, {3.978686569132111*^9, 3.9786865758972816`*^9}, 
+   3.9786867275256767`*^9, 3.978687215749185*^9, 3.978687876607627*^9},
+ CellLabel->
+  "During evaluation of \
+In[140]:=",ExpressionUUID->"04980a38-0cfb-4b3b-9d59-ea94ac9873b6"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"createGraphMutationTree", "[", 
+  RowBox[{"X", ",", "10", ",", "10", ",", "True"}], "]"}]], "Input",
+ CellChangeTimes->{{3.9631645888786*^9, 3.96316459986958*^9}},
+ CellLabel->
+  "In[142]:=",ExpressionUUID->"d20a69b3-fa32-4564-9d32-0f897486e188"],
+
+Cell[BoxData[
+ GraphicsBox[
+  NamespaceBox["NetworkGraphics",
+   DynamicModuleBox[{Typeset`graph = HoldComplete[
+     Graph[{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, {
+       SparseArray[
+       Automatic, {10, 10}, 0, {
+        1, {{0, 0, 1, 2, 3, 6, 8, 11, 12, 15, 18}, {{1}, {1}, {2}, {2}, {3}, {
+          6}, {2}, {3}, {2}, {3}, {6}, {3}, {4}, {5}, {7}, {5}, {7}, {8}}}, 
+         Pattern}], Null}, {
+      EdgeLabels -> {
+        DirectedEdge[7, 3] -> "8.1\n(m=1,n=2)", DirectedEdge[2, 1] -> 
+         "8.1\n(m=1,n=1)", DirectedEdge[6, 2] -> "8.3\n(m=1,n=1)", 
+         DirectedEdge[9, 4] -> "8.2\n(m=2,n=2)", DirectedEdge[6, 3] -> 
+         "8.1\n(m=1,n=1)", DirectedEdge[5, 6] -> "8.3\n(m=2,n=2)", 
+         DirectedEdge[10, 7] -> "8.1\n(m=1,n=3)", DirectedEdge[7, 2] -> 
+         "8.3\n(m=1,n=2)", DirectedEdge[3, 1] -> "8.3\n(m=1,n=1)", 
+         DirectedEdge[4, 2] -> "8.1\n(m=1,n=1)", DirectedEdge[9, 7] -> 
+         "8.3\n(m=1,n=3)", DirectedEdge[10, 8] -> "8.2\n(m=2,n=2)", 
+         DirectedEdge[7, 6] -> "8.1\n(m=2,n=2)", DirectedEdge[9, 5] -> 
+         "8.1\n(m=1,n=3)", DirectedEdge[8, 3] -> "8.3\n(m=1,n=1)", 
+         DirectedEdge[5, 3] -> "8.3\n(m=1,n=2)", DirectedEdge[10, 5] -> 
+         "8.3\n(m=1,n=3)", DirectedEdge[5, 2] -> "8.1\n(m=1,n=2)"}, EdgeStyle -> {
+         RGBColor[0, 0, 1]}, 
+       GraphLayout -> {
+        "Dimension" -> 2, "VertexLayout" -> "LayeredDigraphEmbedding"}, 
+       ImageSize -> Large, PlotLabel -> 
+       Style["Mutation Tree: {1+ , 1- , 1+ , 1-}", Bold, FontSize -> 17], 
+       VertexLabels -> {
+        10 -> "{4-}", 1 -> "{1+ , 1+ , 1- , 1-}", 7 -> "{3+ , 1-}", 3 -> 
+         "{2- , 1+ , 1-}", 5 -> "{3- , 1+}", 2 -> "{2+ , 1+ , 1-}", 8 -> 
+         "{2- , 2-}", 4 -> "{2+ , 2+}", 9 -> "{4+}", 6 -> "{2+ , 2-}"}, 
+       VertexSize -> {Small}, VertexStyle -> {
+         GrayLevel[0]}}]]}, 
+    TagBox[GraphicsGroupBox[{
+       {RGBColor[0, 0, 1], Opacity[0.7], Arrowheads[
+        Medium], {ArrowBox[{{0., 1.}, {0., 0.}}, 0.05], 
+         InsetBox["\<\"8.1\\n(m=1,n=1)\"\>", {0., 0.5}, ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {ArrowBox[{{1., 1.}, {0., 0.}}, 0.05], 
+         InsetBox["\<\"8.3\\n(m=1,n=1)\"\>", {0.5, 0.5}, ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {ArrowBox[{{-3., 2.}, {0., 1.}}, 0.05], 
+         InsetBox["\<\"8.1\\n(m=1,n=1)\"\>", {-1.5, 1.5}, ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {ArrowBox[BezierCurveBox[CompressedData["
+1:eJxTTMoPSmViYGCQAWIQDQEf9kNoDofwRL8SjQMf9oecv3H09Xx2h3l5Z/m7
+p3zcv8lDsmKXKbvDZfXaS+q1n/aL5xwUyznI5vC1J3bPv8rP+9ssLy5kcGZz
+YANr+LL/7waQBlYHtugNrNEbvu6vuwTSyOrw5bBS6oOX3/ZzgNWxOFwAWWP+
+Y/9MYVkugyfMDrNmgsDP/SbGIMDscL10oc+D67/2q87yyLnfwOTAd/fBo7Zd
+v/fvfPrlxq+rjA7258Njeh3/7P8kalHZasTokObDtvNzzp/957SEfOunMTh0
+hLz5sdPmz34/leaQF4wMDouec8o82PB7/yMWMfnGl//st7LGK6Wd/LW/oCv4
+D/+9v/aH1r3m9mn7ud/95j6H2od/7I89Wn9j4vPv+5M/hr858fm3fTHzv0U3
+1b7s38VYfzFH+Jd9Px9nV9CaD/s92llcNcN+2GtyLJL++f7Vfu6mF27/dn+z
+5zyxOma98NP9TJ+0rr92+WpftzNuXX/7/f0G109//fjhs/3cnkixVoZr+6cY
+nl4kcOCT/SmhCY9qVU7v12XUvOe+6aN98f4Vf7582rH/j+vT5dOPf7BnQAEf
+7AEJEeLX
+           "]], 0.05], 
+         InsetBox["\<\"8.1\\n(m=1,n=2)\"\>", {-1.499173762022765, 1.7499627820015482},
+           ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {ArrowBox[BezierCurveBox[CompressedData["
+1:eJxTTMoPSmViYGCQAWIQDQEf9kNoDgcYP+T8jaOv57PD+Zs8JCt2mbI7MEL5
+4jkHxXIOssHl2ywvLmRwRvD/bgBpYIXz6y6p115SR/A55uWd5e9mgfNnCsty
+GTxhhvNNjEGA2UHn2RHOi7ff758g5ce+v4nJYfMMYXWX/Pf7U55zuVbeZXSY
+JP4mPHLXu/1bZma+SXRmdDie5DdHYO/b/TWGWX8rtjA4hFdZfcksf7N/7zqe
+in0GDA4OcRviU1++2v9RadGOlIL/9k18G+4xCb/cH7U5L2Tl1H/2ct2WhU5f
+nu3fxld/2OviX3uBKz7iKr1P9rOYXmb1VP5r77Pz58JLkjf2a5rbh1gx/7bn
+YP59UfPOgf2GG+TnHuL9af/mT/bHw4u320suKHnw0Om7/ZcT/Hz2ry/ZP2Kz
+k5ux6Kv9otsKPldn3LPveVId9lTni/1iaffbNyue2EtY6nWefPjJ/tPb1Wpv
+f72wb2EJ3eZy8KP97id2HUsuvbG/5PbhbtjpD/bQ8IHTAKKIvFs=
+           "]], 0.05], 
+         InsetBox["\<\"8.3\\n(m=1,n=2)\"\>", {-0.4119698473183095, 1.7059849236591547},
+           ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {ArrowBox[{{-1., 3.}, {0., 2.}}, 0.05], 
+         InsetBox["\<\"8.3\\n(m=2,n=2)\"\>", {-0.5, 2.5}, ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {ArrowBox[{{0., 2.}, {0., 1.}}, 0.05], 
+         InsetBox["\<\"8.3\\n(m=1,n=1)\"\>", {0., 1.5}, ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {ArrowBox[{{0., 2.}, {1., 1.}}, 0.05], 
+         InsetBox["\<\"8.1\\n(m=1,n=1)\"\>", {0.5, 1.5}, ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {ArrowBox[BezierCurveBox[CompressedData["
+1:eJxTTMoPSmViYGCQAWIQDQEf7CE0hwOMH3L+xtHX89nh/E0ekhW7TNkdGKF8
+8ZyDYjkH2eDybZYXFzI4I/h/N4A0sML5dZfUay+pI/gc8/LO8nezwPkzhWW5
+DJ4ww/kmxiDA7OAbFvon5fF7+7jLWqpyDUwOZpGhHyf3vreffap2z9dLjA67
+OBju9/x7Z/9BQufnTm1Gh2spoUf9zd7ZR+wzvZ3VxeDQlxu65I7JW/s1paZH
+Be79t3+kxFBj/Ou1/SWZbXKqm//Zn28J9Qlpe2WvVPT2kNCUv/YRk0NF7W++
+sJ9denvjzYY/9tV+DNc/f3pmb6fe8Lqy8re9jI1566TUx/Z882Y7ndz00/79
+XRvxCIkH9j/z5nHr8Pywf5auJNUpdsv+98wOt0Wt3+x9ajLOrq+5Yi8sH/VZ
+W/6rvfqn6RM8jp2zd/0nJHTyxmf76j0zRc9OPmo/wXzzospNn+zl1q8JvnV4
+l/2nU1ZLbdd8tJ/Ha266+NAK+9wdKyVFj8HiCRFvAAuwsNs=
+           "]], 0.05], 
+         InsetBox["\<\"8.3\\n(m=1,n=2)\"\>", {0.8288527141529386, 1.8485930997394353},
+           ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {ArrowBox[BezierCurveBox[CompressedData["
+1:eJxTTMoPSmViYGCQAWIQDQEf7CE0h0N4ol+JxoEP9iHnbxx9PZ/dYV7eWf7u
+KR/tN3lIVuwyZXe4rF57Sb32k714zkGxnINsDl97Yvf8q/xs32Z5cSGDM5sD
+G1jDF/u/G0AaWB3YojewRm/4al93CaSR1eHLYaXUBy+/2XOA1bE4XABZY/7D
+fqawLJfBE2aHWTNB4Ke9iTEIMDvURSzhsbn7y/4K2F4mh1Xpbx59Pf/bvlDm
+OBAxOsiBqMI/9kKCIMDocLXMZOf6Q3/sN7KCLGZwuAblL/jiOf+L5397mPp7
+d0Hgrz3MPFmoeD3UvhiQs1l/28PcA6PPQ90Loz9D/QOj2aH+hdPQ8IDRsPCC
+0Zeg4QmjYeENoyOg8QGjUePrgz0AUTnXHQ==
+           "]], 0.05], 
+         InsetBox["\<\"8.1\\n(m=1,n=2)\"\>", {1.797530864197531, 1.9999999999999998},
+           ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {ArrowBox[{{1., 3.}, {0., 2.}}, 0.05], 
+         InsetBox["\<\"8.1\\n(m=2,n=2)\"\>", {0.5, 2.5}, ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {ArrowBox[BezierCurveBox[CompressedData["
+1:eJxTTMoPSmViYGCQAWIQDQUOEIrDYbWBupVIAoNDyPkbR1/PZ3fw3/6s3fUU
+g8MmD8mKXabsDq8m272cbMfoIJ5zUCznIJtD9TG9uP97GB3aLC8uZHBmc2AG
+a2By+LsBpIHVoVn3RpPuDSaHukvqtZfUWR1+Jk40+lDC7MAxL+8sfzeLQ8ab
+R1/PS7M4zBSW5TJ4wuxwBgxYHEyMQYDZ4dWuALUP2awOqrM8cu43MDm05xUU
+Ot9lddj59MuNX1cZHRY81153TIHN4ZOoRWWrEaODsVrznUozNodzWkK+9dMY
+HFy0yv7EyLE5+Kk0h7xgZHC4+JmFr+AGq8MjFjH5xpf/7G816QtuTmF1KOgK
+/sN/7699wvWvrGqHWRzcb+5zqH34xz7pY/ibE5+ZHZLB9G/7nYz1F3OEmRx2
+gelf9m7tLK6aYQwOHmD6h70Iy8XeP+V/7bmbXrj92/3NnvlJ6Lrrnb/smT5p
+XX/t8tU+ft30148ffrc3uH7668cPn+3Vk6e5KjZ8tZ9ieHqRwIFP9pFMQXv6
+Uz7b6zJq3nPf9NH+e/cpf/3+j/Z/XJ8un378gz0knhA0ABYnwK4=
+           "]], 0.05], 
+         InsetBox["\<\"8.3\\n(m=1,n=1)\"\>", {2.4991737620227648, 1.7499627820015482},
+           ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {ArrowBox[BezierCurveBox[CompressedData["
+1:eJxTTMoPSmViYGCQAWIQDQEf9kNoAYdFvQ92r532cf+0O+wTQ2bxO7Bzrsrp
+bPq8f1/t1SWx8vwO+kUxQpMPf91f9jjDWrqfz0Hi5Pc1pyJ/7N/Feyik9yWv
+wxHeGhsD19/7+/88+LBZj9fBwOHlgcOt//Z/WX+Uvz+Ox8Fwg/zcQ7yMB16o
+F2yUq+R20DK3D7FiZj6QnfLgalIdlwOL6WVWT2XWA3WpYrXReZwOx5P85gjs
+ZT2wpMJhXpQ4p8Mi5jXbD7iwHQhZdiJUeyuHw0TxN+GRu9gOdLxbt/isO4fD
+tHl8tbdk2Q84BX5udzzP7rBphrC6Sz77gZZzU5navdkdnrD+Dp22jv2AT9o0
+4Xl72Bx0nh3hvHib/cBsia+72pTYHLotC52+fGM/UPh04w+HWlYHSLhwHDgD
+BiwO/8GA/UDam0dfz0uzwOV/JU40+lDC7MAI5bfo3mjSvcEEl2fx3/6s3RXB
+rzqmF/d/DyOc/2qy3cvJdgg+WPkpBjh/jYG6lUgCgg+NOAcA6pyt4w==
+           "]], 0.05], 
+         InsetBox["\<\"8.2\\n(m=2,n=2)\"\>", {-2.4119698473183093, 3.2940150763408456},
+           ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {ArrowBox[{{-1., 4.}, {-1., 3.}}, 0.05], 
+         InsetBox["\<\"8.1\\n(m=1,n=3)\"\>", {-1., 3.5}, ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {ArrowBox[{{-1., 4.}, {1., 3.}}, 0.05], 
+         InsetBox["\<\"8.3\\n(m=1,n=3)\"\>", {0., 3.5}, ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {ArrowBox[{{1., 4.}, {-1., 3.}}, 0.05], 
+         InsetBox["\<\"8.3\\n(m=1,n=3)\"\>", {0., 3.5}, ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {ArrowBox[{{1., 4.}, {1., 3.}}, 0.05], 
+         InsetBox["\<\"8.1\\n(m=1,n=3)\"\>", {1., 3.5}, ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {ArrowBox[{{1., 4.}, {2., 3.}}, 0.05], 
+         InsetBox["\<\"8.2\\n(m=2,n=2)\"\>", {1.5, 3.5}, ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}}, 
+       {GrayLevel[0], EdgeForm[{GrayLevel[0], Opacity[
+        0.7]}], {DiskBox[{0., 0.}, 0.05], 
+         InsetBox["\<\"{1+ , 1+ , 1- , 1-}\"\>", Offset[{0, -2}, {0., -0.05}],
+           ImageScaled[{0.5, 1}],
+          BaseStyle->"Graphics"]}, {DiskBox[{0., 1.}, 0.05], 
+         InsetBox["\<\"{2+ , 1+ , 1-}\"\>", {0.06812742926274111, 0.9839172955616847},
+           ImageScaled[{-0.22993674210079762, 0.6723146904105208}],
+          BaseStyle->"Graphics"]}, {DiskBox[{1., 1.}, 0.05], 
+         InsetBox["\<\"{2- , 1+ , 1-}\"\>", {1.0567869529622893, 0.9590702800735365},
+           ImageScaled[{-0.10843163888167051, 0.938532713497824}],
+          BaseStyle->"Graphics"]}, {DiskBox[{-3., 2.}, 0.05], 
+         InsetBox["\<\"{2+ , 2+}\"\>", {-3.068127429262741, 1.9839172955616846},
+           ImageScaled[{1.2299367421007976, 0.6723146904105204}],
+          BaseStyle->"Graphics"]}, {DiskBox[{-1., 3.}, 0.05], 
+         InsetBox["\<\"{3- , 1+}\"\>", {-1.0681274292627412, 2.983917295561685},
+           ImageScaled[{1.2299367421007976, 0.6723146904105204}],
+          BaseStyle->"Graphics"]}, {DiskBox[{0., 2.}, 0.05], 
+         InsetBox["\<\"{2+ , 2-}\"\>", {-0.06467156727579008, 1.9732121597344436},
+           ImageScaled[{1.192909649383465, 0.7870125742738174}],
+          BaseStyle->"Graphics"]}, {DiskBox[{1., 3.}, 0.05], 
+         InsetBox["\<\"{3+ , 1-}\"\>", {1.07, 3.}, ImageScaled[{-0.25, 0.5000000000000002}],
+          BaseStyle->"Graphics"]}, {DiskBox[{2., 3.}, 0.05], 
+         InsetBox["\<\"{2- , 2-}\"\>", {2.0690961220346247, 3.0112127570104876},
+           ImageScaled[{-0.24031559322812246, 0.3798633177447742}],
+          BaseStyle->"Graphics"]}, {DiskBox[{-1., 4.}, 0.05], 
+         InsetBox["\<\"{4+}\"\>", Offset[{0, 2}, {-1., 4.05}], ImageScaled[{0.5, 0}],
+          BaseStyle->"Graphics"]}, {DiskBox[{1., 4.}, 0.05], 
+         InsetBox["\<\"{4-}\"\>", Offset[{0, 2}, {1., 4.05}], ImageScaled[{0.5, 0}],
+          BaseStyle->"Graphics"]}}}],
+     MouseAppearanceTag["NetworkGraphics"]],
+    AllowKernelInitialization->False]],
+  DefaultBaseStyle->"NetworkGraphics",
+  FormatType->TraditionalForm,
+  FrameTicks->None,
+  ImageSize->Large,
+  PlotLabel->FormBox[
+    StyleBox[
+    "\"Mutation Tree: {1+ , 1- , 1+ , 1-}\"", Bold, FontSize -> 17, 
+     StripOnInput -> False], TraditionalForm]]], "Output",
+ CellChangeTimes->{
+  3.96316460113172*^9, 3.9631653473753386`*^9, 3.963165415055127*^9, 
+   3.963165551726045*^9, 3.963165769265044*^9, {3.963165809619294*^9, 
+   3.9631658112887383`*^9}, 3.963166089871024*^9, {3.963166293287248*^9, 
+   3.96316630511102*^9}, 3.963167131139616*^9, 3.96316730506712*^9, 
+   3.96316742770222*^9, 3.96316828835271*^9, 3.963168394066153*^9, 
+   3.963168519665188*^9, {3.96316877933432*^9, 3.963168802238014*^9}, 
+   3.963169005435375*^9, 3.963169116283049*^9, 3.963169228808597*^9, 
+   3.963169325394862*^9, 3.963170117887731*^9, 3.963170159619977*^9, {
+   3.9631702626649656`*^9, 3.963170271446936*^9}, 3.96317034607405*^9, 
+   3.9631706206188917`*^9, 3.963171412598852*^9, 3.963304132512665*^9, 
+   3.963311671698584*^9, 3.978685665075192*^9, 3.978686157207643*^9, 
+   3.97868657632633*^9, 3.978686727959689*^9, 3.978687216180759*^9, 
+   3.978687876850791*^9},
+ CellLabel->
+  "Out[142]=",ExpressionUUID->"84be6f29-0a12-4469-b6e4-cbad9272bbf4"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"X", "=", 
+   RowBox[{"{", 
+    RowBox[{
+    "\"\<1+\>\"", ",", "\"\<1+\>\"", ",", "\"\<1+\>\"", ",", " ", 
+     "\"\<1-\>\"", ",", " ", "\"\<1-\>\""}], "}"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"showMutationTrees", "[", 
+   RowBox[{"X", ",", " ", "10", ",", " ", "10"}], "]"}], 
+  ";"}], "\[IndentingNewLine]"}], "Input",
+ CellChangeTimes->{{3.963171298905398*^9, 3.9631713135902853`*^9}, {
+   3.963171348143845*^9, 3.9631713514787*^9}, 3.963304123984283*^9},
+ CellLabel->
+  "In[143]:=",ExpressionUUID->"c5e5f6ad-8000-458e-9270-32d690d7c097"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["\<\"MUTATION TREES - COMPARISON\"\>"], "Print",
+ CellChangeTimes->{3.963171316531101*^9, 3.963171354481636*^9, 
+  3.963171412607939*^9, 3.963304132520568*^9, 3.963311671706805*^9, 
+  3.978685665082439*^9, 3.97868615721507*^9, 3.978686576334592*^9, 
+  3.978686727966922*^9, 3.978687216188545*^9, 3.97868787685883*^9},
+ CellLabel->
+  "During evaluation of \
+In[143]:=",ExpressionUUID->"1f353cd0-058b-44f3-b090-9c1b2c334c47"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Starting chromosome: \"\>", 
+   "\[InvisibleSpace]", "\<\"{1+ , 1+ , 1+ , 1- , 1-}\"\>"}],
+  SequenceForm["Starting chromosome: ", "{1+ , 1+ , 1+ , 1- , 1-}"],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.963171316531101*^9, 3.963171354481636*^9, 
+  3.963171412607939*^9, 3.963304132520568*^9, 3.963311671706805*^9, 
+  3.978685665082439*^9, 3.97868615721507*^9, 3.978686576334592*^9, 
+  3.978686727966922*^9, 3.978687216188545*^9, 3.9786878768594103`*^9},
+ CellLabel->
+  "During evaluation of \
+In[143]:=",ExpressionUUID->"9011555e-7297-4403-9bcf-d6ba6fd7ac27"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Max depth: \"\>", "\[InvisibleSpace]", "10", 
+   "\[InvisibleSpace]", "\<\", Max value: \"\>", "\[InvisibleSpace]", "10"}],
+  SequenceForm["Max depth: ", 10, ", Max value: ", 10],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.963171316531101*^9, 3.963171354481636*^9, 
+  3.963171412607939*^9, 3.963304132520568*^9, 3.963311671706805*^9, 
+  3.978685665082439*^9, 3.97868615721507*^9, 3.978686576334592*^9, 
+  3.978686727966922*^9, 3.978687216188545*^9, 3.978687876860565*^9},
+ CellLabel->
+  "During evaluation of \
+In[143]:=",ExpressionUUID->"89a0dafb-b6f0-4d67-966f-28c8e44e61c3"],
+
+Cell[BoxData[
+ GraphicsBox[
+  NamespaceBox["NetworkGraphics",
+   DynamicModuleBox[{Typeset`graph = HoldComplete[
+     Graph[{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13}, {
+       SparseArray[
+       Automatic, {13, 13}, 0, {
+        1, {{0, 0, 1, 2, 3, 6, 8, 11, 12, 16, 19, 23, 26, 29}, {{1}, {1}, {
+          2}, {2}, {3}, {6}, {2}, {3}, {2}, {3}, {6}, {3}, {4}, {5}, {7}, {
+          10}, {4}, {6}, {7}, {5}, {7}, {8}, {12}, {6}, {7}, {8}, {9}, {10}, {
+          11}}}, Pattern}], Null}, {EdgeStyle -> {
+         RGBColor[0, 0, 1]}, 
+       GraphLayout -> {
+        "Dimension" -> 2, "VertexLayout" -> "LayeredDigraphEmbedding"}, 
+       ImageSize -> Large, PlotLabel -> 
+       Style["Mutation Tree: {1+ , 1+ , 1+ , 1- , 1-}", Bold, FontSize -> 17],
+        VertexLabels -> {
+        4 -> "{2+ , 2+ , 1+}", 5 -> "{3- , 1+ , 1+}", 10 -> "{3+ , 2+}", 13 -> 
+         "{5+}", 2 -> "{2+ , 1+ , 1+ , 1-}", 6 -> "{2+ , 2- , 1+}", 1 -> 
+         "{1+ , 1+ , 1+ , 1- , 1-}", 8 -> "{2- , 2- , 1+}", 3 -> 
+         "{2- , 1+ , 1+ , 1-}", 12 -> "{3+ , 2-}", 7 -> "{3+ , 1+ , 1-}", 11 -> 
+         "{4- , 1+}", 9 -> "{4+ , 1+}"}, VertexSize -> {Small}, VertexStyle -> {
+         GrayLevel[0]}}]]}, 
+    TagBox[GraphicsGroupBox[{
+       {RGBColor[0, 0, 1], Opacity[0.7], Arrowheads[Medium], 
+        ArrowBox[{{0., 1.}, {0., 0.}}, 0.05], 
+        ArrowBox[{{1., 1.}, {0., 0.}}, 0.05], 
+        ArrowBox[BezierCurveBox[CompressedData["
+1:eJxTTMoPSmViYGCQAWIQDQEcB6C0w38wYD8Qcv7G0dfz2R1g8ps8JCt2mbI7
+MEL54jkHxXIOssHl2ywvLmRwRvD/bgBpYIXz6y6p115SR/A55uWd5e9mgfNn
+CstyGTxhhvNNjEGA2aF9lc/J9G/sB35w62sKtTA5KK4yUp1/k/0A89q+M0cf
+MTqc/LdReNlK9gNRYkGyfv6MDg0rTk2pSQOqd6+UXn2SwcFzec0KJQH2Aw8c
+WY7fCWRwUPp93G/GMrYDShzP7I+d/2/PtWRN+11NtgNist0+NeL/7ZkWaQV/
+msl6YPah75tvV/2z5/7quPHaN5YDm35olz35+dd+2gPh5wbNjAf4Xm93Ob3m
+t/0R3y37D6z7s/+tpM3Uqf0/7e/1a5qfevZtv3frjnTnRd/tS9vbTerWfdyv
+rqu758qTr/ZymXPyd3K/2t8qOGuSZ/gX+1C9342nbz7cn2L0/9XCn5/sxfeG
+OaT2Xd1/qD/m6N3TH+3Fnm/W2O1/eP9CzU2Kf89+sGdAAR/sAVVAt+s=
+          "]], 0.05], ArrowBox[BezierCurveBox[CompressedData["
+1:eJxTTMoPSmViYGCQAWIQDQEf9kNoDofwRL8SjQMf9oecv3H09Xx2h3l5Z/m7
+p3zcv8lDsmKXKbvDZfXaS+q1n/aL5xwUyznI5vC1J3bPv8rP+9ssLy5kcGZz
+YANr+LL/7waQBlYHtugNrNEbvu6vuwTSyOrw5bBS6oOX3/ZzgNWxOFwAWWP+
+Y/9MYVkugyfMDrNmgsDP/SbGIMDscL10oc+D67/2q87yyLnfwOTAd/fBo7Zd
+v/fvfPrlxq+rjA7258Njeh3/7P8kalHZasTokObDtvNzzp/957SEfOunMTh0
+hLz5sdPmz34/leaQF4wMDouec8o82PB7/yMWMfnGl//st7LGK6Wd/LW/oCv4
+D/+9v/aH1r3m9mn7ud/95j6H2od/7I89Wn9j4vPv+5M/hr858fm3fTHzv0U3
+1b7s38VYfzFH+Jd9Px9nV9CaD/s92llcNcN+2GtyLJL++f7Vfu6mF27/dn+z
+5zyxOma98NP9TJ+0rr92+WpftzNuXX/7/f0G109//fjhs/3cnkixVoZr+6cY
+nl4kcOCT/SmhCY9qVU7v12XUvOe+6aN98f4Vf7582rH/j+vT5dOPf7BnQAEf
+7AEJEeLX
+          "]], 0.05], ArrowBox[BezierCurveBox[CompressedData["
+1:eJxTTMoPSmViYGCQAWIQDQEf9kNoDgcYP+T8jaOv57PD+Zs8JCt2mbI7MEL5
+4jkHxXIOssHl2ywvLmRwRvD/bgBpYIXz6y6p115SR/A55uWd5e9mgfNnCsty
+GTxhhvNNjEGA2UHn2RHOi7ff758g5ce+v4nJYfMMYXWX/Pf7U55zuVbeZXSY
+JP4mPHLXu/1bZma+SXRmdDie5DdHYO/b/TWGWX8rtjA4hFdZfcksf7N/7zqe
+in0GDA4OcRviU1++2v9RadGOlIL/9k18G+4xCb/cH7U5L2Tl1H/2ct2WhU5f
+nu3fxld/2OviX3uBKz7iKr1P9rOYXmb1VP5r77Pz58JLkjf2a5rbh1gx/7bn
+YP59UfPOgf2GG+TnHuL9af/mT/bHw4u320suKHnw0Om7/ZcT/Hz2ry/ZP2Kz
+k5ux6Kv9otsKPldn3LPveVId9lTni/1iaffbNyue2EtY6nWefPjJ/tPb1Wpv
+f72wb2EJ3eZy8KP97id2HUsuvbG/5PbhbtjpD/bQ8IHTAKKIvFs=
+          "]], 0.05], ArrowBox[{{-1., 3.}, {0., 2.}}, 0.05], 
+        ArrowBox[{{0., 2.}, {0., 1.}}, 0.05], 
+        ArrowBox[{{0., 2.}, {1., 1.}}, 0.05], 
+        ArrowBox[BezierCurveBox[CompressedData["
+1:eJxTTMoPSmViYGCQAWIQDQEf7CE0hwOMH3L+xtHX89nh/E0ekhW7TNkdGKF8
+8ZyDYjkH2eDybZYXFzI4I/h/N4A0sML5dZfUay+pI/gc8/LO8nezwPkzhWW5
+DJ4ww/kmxiDA7OAbFvon5fF7+7jLWqpyDUwOZpGhHyf3vreffap2z9dLjA67
+OBju9/x7Z/9BQufnTm1Gh2spoUf9zd7ZR+wzvZ3VxeDQlxu65I7JW/s1paZH
+Be79t3+kxFBj/Ou1/SWZbXKqm//Zn28J9Qlpe2WvVPT2kNCUv/YRk0NF7W++
+sJ9denvjzYY/9tV+DNc/f3pmb6fe8Lqy8re9jI1566TUx/Z882Y7ndz00/79
+XRvxCIkH9j/z5nHr8Pywf5auJNUpdsv+98wOt0Wt3+x9ajLOrq+5Yi8sH/VZ
+W/6rvfqn6RM8jp2zd/0nJHTyxmf76j0zRc9OPmo/wXzzospNn+zl1q8JvnV4
+l/2nU1ZLbdd8tJ/Ha266+NAK+9wdKyVFj8HiCRFvAAuwsNs=
+          "]], 0.05], ArrowBox[BezierCurveBox[CompressedData["
+1:eJxTTMoPSmViYGCQAWIQDQEf7CE0h0N4ol+JxoEP9iHnbxx9PZ/dYV7eWf7u
+KR/tN3lIVuwyZXe4rF57Sb32k714zkGxnINsDl97Yvf8q/xs32Z5cSGDM5sD
+G1jDF/u/G0AaWB3YojewRm/4al93CaSR1eHLYaXUBy+/2XOA1bE4XABZY/7D
+fqawLJfBE2aHWTNB4Ke9iTEIMDvURSzhsbn7y/4K2F4mh1Xpbx59Pf/bvlDm
+OBAxOsiBqMI/9kKCIMDocLXMZOf6Q3/sN7KCLGZwuAblL/jiOf+L5397mPp7
+d0Hgrz3MPFmoeD3UvhiQs1l/28PcA6PPQ90Loz9D/QOj2aH+hdPQ8IDRsPCC
+0Zeg4QmjYeENoyOg8QGjUePrgz0AUTnXHQ==
+          "]], 0.05], ArrowBox[{{1., 3.}, {0., 2.}}, 0.05], 
+        ArrowBox[BezierCurveBox[CompressedData["
+1:eJxTTMoPSmViYGCQAWIQDQEcDjD6PxiwO4Scv3H09Xx2uPgmD8mKXabsDoxQ
+vnjOQbGcg2xw+TbLiwsZnBH8vxtAGljh/LpL6rWX1BF8jnl5Z/m7WeD8mcKy
+XAZPmOF8E2MQYHbosix0+vKN3WGClB/7/iYmB91nRzgv3mZ3SHnO5Vp5l9Hh
+Kevv0Gnr2B22zMx8k+jM6LBphrC6Sz67Q41h1t+KLQwO0+bx1d6SZXfYu46n
+Yp8Bg8ME8TfhkbvYHD4qLdqRUvDffiHzmu0HXNgcojbnhayc+s/+eJLfHIG9
+rA7b+OoPe138a89iepnVU5nVAUL/tdc0tw+xYmZ2gNC/7Q02yM89xMvoYAim
+f9obO7w8cLj1n73kgpIHD52+2x/mrbExcP1t/4jNTm7Goq/24ie/rzkV+cO+
+50l12FOdL/b6RTFCkw9/tZew1Os8+fCTPTvnqpzOps/2LSyh21wOfrRf3Ptg
+99ppH+0vuX24G3b6gz0kfBA0AEC8n60=
+          "]], 0.05], ArrowBox[BezierCurveBox[CompressedData["
+1:eJxTTMoPSmViYGCQAWIQDQUHIJSIw2/Xp8unH2c40LCOTUzqnLCDDqPmPfdN
+jAe27i/lyJss7DDF8PQigQNMB+YY+17/7S/sYHD99NePH5gPmHD1Nh1mFnZg
++qR1/bUL64F6Z1Ouo+uEHLiaXrj92812oO6+ax5DoJCDezuLq2YYxwG9e/vW
+lb4SdNjNWH8xR5jrwCT7BadVqgUdkj+GvznxmfvAcuZXR3iZBR0Srn9lVTvM
+c2Ct54X1C44LONxs0hfcnMJ7IFn2NUNNh4DDxc8sfAU3eA+cqLPaMd9VwMFV
+q+xPjBzfgU23a1aL/+N3MFFrvlNpxnfA6OrbTQ2Z/A4LnmuvO6bAd4Dv1fG2
+qrN8Dh15BYXOd3kPuEtxq7Nq8Tm83RWg9iGb98Dd1O2TFep5Hc6eAQGeA1Da
+If3No6/npXkOQGmHX4kTjT6UcB+A0g4tujeadG9wHYDSDiz+25+1u3IdgNIO
+1cf04v7v4TwApR1eTbZ7OdmO8wCUdgArO8VxAEo7rDFQtxJJ4DgApR0g8cQB
+jS8OBwCN7cIQ
+          "]], 0.05], ArrowBox[BezierCurveBox[CompressedData["
+1:eJxTTMoPSmViYGCQAWIQDQUHIJSIw2oDdSuRBIYDK9PfPPp6XtjBf/uzdtdT
+DAcilvDY3J0l7PBqst3LyXaMB3i2JXBvSxB2qD6mF/d/D+OBw3NeBDQoCjsw
+gzUwHagDaxByaNa90aR7g+mA/UuQRiGHn4kTjT6UMB9gAasTcsgAWSPNcuBM
+Jx+rxCdBhzNgwHJg1kwQEHR4tStA7UM26wFhX5Vt+Q6CDu15BYXOd1kP3Cmq
+yvn7SsBhwXPtdccU2A784pqzx2mmgIOxWvOdSjO2A+mincvsvQUcXLTK/sTI
+sR1Qn+So9YVBwOHiZxa+ghusB4qYuvsPlPA73GrSF9ycwnrA4qjmP/b3fA4J
+17+yqh1mObAoJ37BvgI+h6SP4W9OfGY+sPGHdtmTn7wOOxnrL+YIMx2407A/
+Yxsnr4NbO4urZhjDgSXOTYtEtHkcRFgu9v4p/7ufzbFE+X8stwPzk9B11zt/
+7WeqnPq6dBGXQ/y66a8fP/y+f8brp78qfnA6qCdPc1Vs+Lr/1IzUQI4ETodI
+pqA9/Smf909rEHmvfJPD4Xv3KX/9/o/7/y36dPl0MocDJJ4+7IfQHA4AibPH
+AA==
+          "]], 0.05], ArrowBox[BezierCurveBox[CompressedData["
+1:eJxTTMoPSmViYGCQAWIQDQUHIJSIA4y/Mv3No6/nheH8iCU8NndnCTswQvk8
+2xK4tyUg5A/PeRHQoIjg14E1CMH59i8n272cjOCz+G9/1u6K4J/p5GOV+CQI
+58+aCQKCDgKhMyedf/N//5/W6SKcToIOjiGpXnab/+9vCnN/lvRRwGHS32R1
+n+D/+/W4V/ItXy7gwBg4VfPnmX/7/yze03s1BSjv9zPAVeHf/g8KTcnvNAQc
+nL71zzXw/btfiOWz/OPn/A4iHpH8u4P/7O/qc1Xb183vwOYSuuyJ8e/9fg9/
+38y15XcQe9WctPbtz/2Rf0StP/3hc9A+qH4uke3z/rav0YtSr/E6dM7OqG+M
+fbn/G8+8U6eO8zgU2y+7ozH79v5lTnc2K17kdggpr/B4/HzX/inTxOKyPnE5
+dEX3OUpdPG5/mMP35BJtLofwxZx/Mnzu2BvNrP96oYbToXThlfizFk/tH7qv
+e/TuKYeDNdtlU0Gd1/YXRW5O+JfGAQ2fD/YQmsMBAIk5r80=
+          "]], 0.05], ArrowBox[{{-2., 5.}, {-1., 4.}}, 0.05], 
+        ArrowBox[{{-1., 4.}, {-3., 3.}}, 0.05], 
+        ArrowBox[BezierCurveBox[CompressedData["
+1:eJxTTMoPSmViYGCQAWIQDQEf9kNoAQe1/jVnrha/239CWbv46xx+B5msrq0t
+y9/sb5+VpPtQk9/h8YSZu3hmv9pvlbJM7/AyPocy5lu3c/1e7L/X8K1stjCf
+w+2D3pIrDj7dX/YhiC2rgNeB78y7ot1fHu1n2bz7jt5eHgcll7aL/ufv7285
+YfDr5U9uhxPtE7/eMrm5/6fBprjZatwOXMn/AyWkLu1PfGPP5ezM5bBg08pV
+zLPP7Dd0FVKfvJ/T4ciblefWPTu6/71b57xvppwONSX/+Y3ED+yf8XFJQe4y
+Dof+ySF3pSK37ddyTZ37XYADqn/N/uWOp1SmlrJD1S/YL/D8MpvbFTaofM/+
+FNMmZy5dNoeVYH7O/sU6V289rGd1gIXQGTBggfPT3jz6el4awf+VONHoQwkz
+nN+ie6NJ9wYTnM/iv/1ZuyuCX3VML+7/HkY4/9Vku5eT7RB8sPJTDHD+GgN1
+K5EEBB8KHAABHavH
+          "]], 0.05], ArrowBox[{{-1., 4.}, {1., 3.}}, 0.05], 
+        ArrowBox[BezierCurveBox[CompressedData["
+1:eJxTTMoPSmViYGCQAWIQDQEf7CG0iEOAbbL4+vp39ivT3zz6el7Y4bBS6oOX
+197YRyzhsbk7S9ghZgNr9AbW1/Y82xK4tyUIO4g9c2ln4nlpf3jOi4AGRWGH
+L2ANz+zrwBqEHL56zv/iOf+Jvf3LyXYvJws5SFXsMrXXeWTP4r/9WburkMMR
+sL779mc6+VglPgk6zJoJAjftIbSgwxQ7kMbL9q9A2u0EHWSOFwLRGXvLvscW
+fY8FHIQFQeCgfVcHCAg4SOUcFMs5uMz+RpMuEMH5+wN+LfH/tYTfQRCifv+H
+dyDA5yALMW8/2DgLPph9+/XABvDC3LP/7BkQ4HE4BHHvfnDwSPPA/LP/V+JE
+ow8l3A7fIP7d3wKy/gYXLDz2Q/zLBQuv/dXH9OL+7+F0iIaE536I/zgdjkDC
+ez9Y+SkOh0BIfOxfY6BuJZLA4QCNr/0QmsMBALUCznM=
+          "]], 0.05], ArrowBox[BezierCurveBox[CompressedData["
+1:eJxTTMoPSmViYGCQAWIQDQEf7CG0iAOMvzL9zaOv54Xh/IglPDZ3Zwk7MEL5
+PNsSuLclIOQPz3kR0KCI4NeBNQjB+fYvJ9u9nIzgs/hvf9buiuCf6eRjlfgk
+COfPmgkCCP4rkHY7BN+y77FF32MBuHu6OkBAAC5/o0kXiBD8gF9L/H8t4Yfz
+P7wDAT44H2ycBYKvBzaAF84/ewYEeOB8cPBII/i/EicafSjhhrunBWT9DS40
+/yL41cf04v7v4UTzH4IPVn6KA85fY6BuJZKA4ENoDgcAr3OCaQ==
+          "]], 0.05], ArrowBox[BezierCurveBox[CompressedData["
+1:eJxTTMoPSmViYGCQAWIQDQEf7CG0iMOi3ge71077aO/9rtlD66ywAzvnqpzO
+ps/29/dlXVrXL+ygXxQjNPnwV/vdhVvm9roLO0ic/L7mVOQP+7tsiauOfRFy
+OMJbY2Pg+tveo67gR+R0IQcDh5cHDrf+s/91/VG7u76Qg+EG+bmHeBkdvgjv
+iOjfI+igZW4fYsXM7GBm9CHL0F7QgcX0MqunMqvDfqPufbrbBRyOJ/nNEdjL
+6hBko+C/tlvAYRHzmu0HXNgcNIOfrJoaJeAwUfxNeOQuNgfX8usXnykLOEyb
+x1d7S5bdwTnwc7vjeX6HTTOE1V3y2R1azk1lavfmd3jC+jt02jp2B7+0acLz
+9vA56Dw7wnnxNrvDHImvu9qU+By6LQudvnxjdyh6uvGHQy2vAyRcOBzOngEB
+Hof/YMDukP7m0dfz0jxw+V+JE40+lHA7MEL5Lbo3mnRvcMHlWfy3P2t3RfCr
+j+nF/d/DCee/mmz3crIdgg9WfooDzl9joG4lkoDgw2gApoehbA==
+          "]], 0.05], ArrowBox[{{1., 5.}, {2., 4.}}, 0.05], 
+        ArrowBox[BezierCurveBox[CompressedData["
+1:eJxTTMoPSmViYGCQAWIQDQUOEErAAcYPPn/j6Ov5/HD+Rg/Jil2m/A6MUL5E
+zkGxnIN8cPlWy4sLGZwR/D8bQBp44fy6S+q1l9QRfLZ5eWf5u3ng/BnCslwG
+T7jhfGMw4HYQK37U8uLtf/s+KT/2/U1cDlFnOoUXbf9vn/qcy7XyLqfDKe5v
+q3Vi/9tvm5n5JtGZ0yHFUN2v494/+xrDrL8VWzgcdGxlf22x/me/bx1PxT4D
+DgcF/RvrN5X8ta8UDIwx2sHu4Mgekd/Y+cd+TaT5qite7A59R+dYKFb9to9p
+35+49AWbA0fWMu5Jbr/sm2a9bFoykc0hKK9uRQnbN/ups+W15jayOiQm2Fu1
+Sn+yl7zR7/ewjcUhpeFSYzv3W3veAKsPBQuZHdqkf1QkdD2zL2KW5/e5yOSg
+P+l95NTND+zdPtmuLhJjcth1otDTh++6fY/M9CNPChgdLD0CUr1Fztg7NWlF
+L3rA4KB9i2Pf7ayd9pnKP/JWp8LiCRFvABGflb4=
+          "]], 0.05], ArrowBox[{{2., 4.}, {1., 3.}}, 0.05], 
+        ArrowBox[{{2., 4.}, {3., 3.}}, 0.05], 
+        ArrowBox[{{-1., 6.}, {-2., 5.}}, 0.05], 
+        ArrowBox[BezierCurveBox[CompressedData["
+1:eJxTTMoPSmViYGCQAWIQDQEf9kNoCQcYf2X6m0dfz4vD+ZFLeGzuzhJ3YITy
+ebYlcG9LQMgfnvMioEERwa+PAGkQg/PtX062ezkZwWfx3/6s3RXBP9vJxyrx
+SRTOnzUTBBB8sHY7BN+y77FF32MRuHs6O0BABC5/s0n3RpMugq9Re0m99pIw
+nF9RDgII/vFCGSBC8MVzDorlHBSC89PAAME3Kfv46zkvgv93g4dkxS5BuHsO
+iYEMEITLNy2P/nxYCcG3SxZfX39PAM7/4jkfiBD8FSDlqQh+2AxhWS4DBB9C
+CzgAAKa0h9o=
+          "]], 0.05], ArrowBox[{{-1., 6.}, {1., 5.}}, 0.05]}, 
+       {GrayLevel[0], EdgeForm[{GrayLevel[0], Opacity[
+        0.7]}], {DiskBox[{0., 0.}, 0.05], 
+         InsetBox["\<\"{1+ , 1+ , 1+ , 1- , 1-}\"\>", 
+          Offset[{0, -2}, {0., -0.05}], ImageScaled[{0.5, 1}],
+          BaseStyle->"Graphics"]}, {DiskBox[{0., 1.}, 0.05], 
+         InsetBox["\<\"{2+ , 1+ , 1+ , 1-}\"\>", {0.06812742926274111, 0.9839172955616847},
+           ImageScaled[{-0.22993674210079762, 0.6723146904105208}],
+          BaseStyle->"Graphics"]}, {DiskBox[{1., 1.}, 0.05], 
+         InsetBox["\<\"{2- , 1+ , 1+ , 1-}\"\>", {1.0494974746830583, 0.9505025253169416},
+           ImageScaled[{-0.03033008588991004, 1.0303300858899114}],
+          BaseStyle->"Graphics"]}, {DiskBox[{-3., 3.}, 0.05], 
+         InsetBox["\<\"{2+ , 2+ , 1+}\"\>", {-3.0676549754135265, 2.9820332445390085},
+           ImageScaled[{1.2248747365735022, 0.6925009513677679}],
+          BaseStyle->"Graphics"]}, {DiskBox[{-1., 3.}, 0.05], 
+         InsetBox["\<\"{3- , 1+ , 1+}\"\>", {-1.062609903369994, 2.968695048315003},
+           ImageScaled[{1.170820393249937, 0.8354101966249683}],
+          BaseStyle->"Graphics"]}, {DiskBox[{0., 2.}, 0.05], 
+         InsetBox["\<\"{2+ , 2- , 1+}\"\>", {-0.06467156727579008, 1.9732121597344436},
+           ImageScaled[{1.192909649383465, 0.7870125742738174}],
+          BaseStyle->"Graphics"]}, {DiskBox[{1., 3.}, 0.05], 
+         InsetBox["\<\"{3+ , 1+ , 1-}\"\>", {1.06467156727579, 2.9732121597344436},
+           ImageScaled[{-0.19290964938346478, 0.7870125742738179}],
+          BaseStyle->"Graphics"]}, {DiskBox[{3., 3.}, 0.05], 
+         InsetBox["\<\"{2- , 2- , 1+}\"\>", {3.07, 3.}, ImageScaled[{-0.25, 0.5000000000000002}],
+          BaseStyle->"Graphics"]}, {DiskBox[{-2., 5.}, 0.05], 
+         InsetBox["\<\"{4+ , 1+}\"\>", {-2.056786952962289, 5.0409297199264635},
+           ImageScaled[{1.1084316388816706, 0.061467286502176144}],
+          BaseStyle->"Graphics"]}, {DiskBox[{-1., 4.}, 0.05], 
+         InsetBox["\<\"{3+ , 2+}\"\>", {-0.9404544434153571, 4.036801177848339},
+           ImageScaled[{-0.13798810626403035, 0.10570166591065033}],
+          BaseStyle->"Graphics"]}, {DiskBox[{1., 5.}, 0.05], 
+         InsetBox["\<\"{4- , 1+}\"\>", {1.0409297199264635, 5.056786952962289},
+           ImageScaled[{0.06146728650217603, -0.1084316388816704}],
+          BaseStyle->"Graphics"]}, {DiskBox[{2., 4.}, 0.05], 
+         InsetBox["\<\"{3+ , 2-}\"\>", {2.0494974746830583, 4.049497474683058},
+           ImageScaled[{-0.030330085889910485, -0.03033008588991093}],
+          BaseStyle->"Graphics"]}, {DiskBox[{-1., 6.}, 0.05], 
+         InsetBox["\<\"{5+}\"\>", Offset[{0, 2}, {-1., 6.05}], ImageScaled[{0.5, 0}],
+          BaseStyle->"Graphics"]}}}],
+     MouseAppearanceTag["NetworkGraphics"]],
+    AllowKernelInitialization->False]],
+  DefaultBaseStyle->"NetworkGraphics",
+  FormatType->TraditionalForm,
+  FrameTicks->None,
+  ImageSize->Large,
+  PlotLabel->FormBox[
+    StyleBox[
+    "\"Mutation Tree: {1+ , 1+ , 1+ , 1- , 1-}\"", Bold, FontSize -> 17, 
+     StripOnInput -> False], TraditionalForm]]], "Print",
+ CellChangeTimes->{3.963171316531101*^9, 3.963171354481636*^9, 
+  3.963171412607939*^9, 3.963304132520568*^9, 3.963311671706805*^9, 
+  3.978685665082439*^9, 3.97868615721507*^9, 3.978686576334592*^9, 
+  3.978686727966922*^9, 3.978687216188545*^9, 3.978687877322497*^9},
+ CellLabel->
+  "During evaluation of \
+In[143]:=",ExpressionUUID->"cf7b580f-d587-44ea-b6a6-1a8b2abb2c79"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"showMutationTrees", "[", 
+   RowBox[{"X", ",", " ", "2", ",", " ", "10"}], "]"}], ";"}]], "Input",
+ CellChangeTimes->{3.978687842366493*^9, 3.978687891782715*^9},
+ CellLabel->
+  "In[148]:=",ExpressionUUID->"260a8472-3d3f-4ffd-bde9-0260dc0ace0a"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["\<\"MUTATION TREES - COMPARISON\"\>"], "Print",
+ CellChangeTimes->{3.978687893699182*^9},
+ CellLabel->
+  "During evaluation of \
+In[148]:=",ExpressionUUID->"ea642adf-6f48-468c-9d2b-64dfc731df4d"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Starting chromosome: \"\>", 
+   "\[InvisibleSpace]", "\<\"{1+ , 1+ , 1+ , 1+ , 1+ , 1+ , 1- , 1- , \
+1-}\"\>"}],
+  SequenceForm[
+  "Starting chromosome: ", "{1+ , 1+ , 1+ , 1+ , 1+ , 1+ , 1- , 1- , 1-}"],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.978687893700285*^9},
+ CellLabel->
+  "During evaluation of \
+In[148]:=",ExpressionUUID->"0f4f7497-eba3-4ce3-8c5c-9cc32fb20ece"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Max depth: \"\>", "\[InvisibleSpace]", "2", 
+   "\[InvisibleSpace]", "\<\", Max value: \"\>", "\[InvisibleSpace]", "10"}],
+  SequenceForm["Max depth: ", 2, ", Max value: ", 10],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.978687893701542*^9},
+ CellLabel->
+  "During evaluation of \
+In[148]:=",ExpressionUUID->"39f2561d-fdd1-476a-9ca4-2202ed64dbf4"],
+
+Cell[BoxData[
+ GraphicsBox[
+  NamespaceBox["NetworkGraphics",
+   DynamicModuleBox[{Typeset`graph = HoldComplete[
+     Graph[{1, 2, 3, 4, 5, 6, 7, 8}, {
+       SparseArray[
+       Automatic, {8, 8}, 0, {
+        1, {{0, 0, 1, 2, 3, 5, 7, 9, 10}, {{1}, {1}, {2}, {2}, {3}, {2}, {
+          3}, {2}, {3}, {3}}}, Pattern}], Null}, {EdgeStyle -> {
+         RGBColor[0, 0, 1]}, 
+       GraphLayout -> {
+        "Dimension" -> 2, "VertexLayout" -> "LayeredDigraphEmbedding"}, 
+       ImageSize -> Large, PlotLabel -> 
+       Style["Mutation Tree: {1+ , 1+ , 1+ , 1+ , 1+ , 1+ , 1- , 1- , 1-}", 
+         Bold, FontSize -> 17], 
+       VertexLabels -> {
+        8 -> "{2- , 2- , 1+ , 1+ , 1+ , 1+ , 1-}", 2 -> 
+         "{2+ , 1+ , 1+ , 1+ , 1+ , 1+ , 1- , 1-}", 1 -> 
+         "{1+ , 1+ , 1+ , 1+ , 1+ , 1+ , 1- , 1- , 1-}", 4 -> 
+         "{2+ , 2+ , 1+ , 1+ , 1+ , 1+ , 1-}", 5 -> 
+         "{3- , 1+ , 1+ , 1+ , 1+ , 1+ , 1-}", 7 -> 
+         "{3+ , 1+ , 1+ , 1+ , 1+ , 1- , 1-}", 3 -> 
+         "{2- , 1+ , 1+ , 1+ , 1+ , 1+ , 1- , 1-}", 6 -> 
+         "{2+ , 2- , 1+ , 1+ , 1+ , 1+ , 1-}"}, VertexSize -> {Small}, 
+       VertexStyle -> {
+         GrayLevel[0]}}]]}, 
+    TagBox[GraphicsGroupBox[{
+       {RGBColor[0, 0, 1], Opacity[0.7], Arrowheads[Medium], 
+        ArrowBox[{{0., 1.}, {0., 0.}}, 0.05], 
+        ArrowBox[{{1., 1.}, {0., 0.}}, 0.05], 
+        ArrowBox[{{-2., 2.}, {0., 1.}}, 0.05], 
+        ArrowBox[{{-1., 2.}, {0., 1.}}, 0.05], 
+        ArrowBox[{{-1., 2.}, {1., 1.}}, 0.05], 
+        ArrowBox[{{0., 2.}, {0., 1.}}, 0.05], 
+        ArrowBox[{{0., 2.}, {1., 1.}}, 0.05], 
+        ArrowBox[{{1., 2.}, {0., 1.}}, 0.05], 
+        ArrowBox[{{1., 2.}, {1., 1.}}, 0.05], 
+        ArrowBox[{{2., 2.}, {1., 1.}}, 0.05]}, 
+       {GrayLevel[0], EdgeForm[{GrayLevel[0], Opacity[
+        0.7]}], {DiskBox[{0., 0.}, 0.05], 
+         InsetBox["\<\"{1+ , 1+ , 1+ , 1+ , 1+ , 1+ , 1- , 1- , 1-}\"\>", 
+          Offset[{0, -2}, {0., -0.05}], ImageScaled[{0.5, 1}],
+          BaseStyle->"Graphics"]}, {DiskBox[{0., 1.}, 0.05], 
+         InsetBox["\<\"{2+ , 1+ , 1+ , 1+ , 1+ , 1+ , 1- , 1-}\"\>", {0.06467156727579004, 0.9732121597344436},
+           ImageScaled[{-0.19290964938346478, 0.7870125742738179}],
+          BaseStyle->"Graphics"]}, {DiskBox[{1., 1.}, 0.05], 
+         InsetBox["\<\"{2- , 1+ , 1+ , 1+ , 1+ , 1+ , 1- , 1-}\"\>", {1.0494974746830583, 0.9505025253169416},
+           ImageScaled[{-0.03033008588991004, 1.0303300858899114}],
+          BaseStyle->"Graphics"]}, {DiskBox[{-2., 2.}, 0.05], 
+         InsetBox["\<\"{2+ , 2+ , 1+ , 1+ , 1+ , 1+ , 1-}\"\>", 
+          Offset[{0, 2}, {-2., 2.05}], ImageScaled[{0.5, 0}],
+          BaseStyle->"Graphics"]}, {DiskBox[{-1., 2.}, 0.05], 
+         InsetBox["\<\"{3- , 1+ , 1+ , 1+ , 1+ , 1+ , 1-}\"\>", 
+          Offset[{0, 2}, {-1., 2.05}], ImageScaled[{0.5, 0}],
+          BaseStyle->"Graphics"]}, {DiskBox[{0., 2.}, 0.05], 
+         InsetBox["\<\"{2+ , 2- , 1+ , 1+ , 1+ , 1+ , 1-}\"\>", 
+          Offset[{0, 2}, {0., 2.05}], ImageScaled[{0.5, 0}],
+          BaseStyle->"Graphics"]}, {DiskBox[{1., 2.}, 0.05], 
+         InsetBox["\<\"{3+ , 1+ , 1+ , 1+ , 1+ , 1- , 1-}\"\>", 
+          Offset[{0, 2}, {1., 2.05}], ImageScaled[{0.5, 0}],
+          BaseStyle->"Graphics"]}, {DiskBox[{2., 2.}, 0.05], 
+         InsetBox["\<\"{2- , 2- , 1+ , 1+ , 1+ , 1+ , 1-}\"\>", 
+          Offset[{0, 2}, {2., 2.05}], ImageScaled[{0.5, 0}],
+          BaseStyle->"Graphics"]}}}],
+     MouseAppearanceTag["NetworkGraphics"]],
+    AllowKernelInitialization->False]],
+  DefaultBaseStyle->"NetworkGraphics",
+  FormatType->TraditionalForm,
+  FrameTicks->None,
+  ImageSize->Large,
+  PlotLabel->FormBox[
+    StyleBox[
+    "\"Mutation Tree: {1+ , 1+ , 1+ , 1+ , 1+ , 1+ , 1- , 1- , 1-}\"", Bold, 
+     FontSize -> 17, StripOnInput -> False], TraditionalForm]]], "Print",
+ CellChangeTimes->{3.9786878941359053`*^9},
+ CellLabel->
+  "During evaluation of \
+In[148]:=",ExpressionUUID->"dca93104-c340-4eb0-a326-637afb317e89"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{1440, 767},
+WindowMargins->{{Automatic, 175}, {Automatic, 77}},
+FrontEndVersion->"14.0 for Mac OS X ARM (64-bit) (December 12, 2023)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"8389ce10-df1e-4aee-a4d2-a3f345f547fa"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[558, 20, 287, 5, 52, "Input",ExpressionUUID->"6cbd5101-5d6b-4319-9588-4ab79623c079"],
+Cell[CellGroupData[{
+Cell[870, 29, 167, 3, 67, "Section",ExpressionUUID->"e9880297-f1af-4814-b1ec-0262ffefdeeb"],
+Cell[1040, 34, 803, 19, 150, "Text",ExpressionUUID->"39e16c75-6ba2-49d7-8182-5c7f9b8cfbb5"],
+Cell[1846, 55, 1528, 40, 157, "Input",ExpressionUUID->"1f96cfdc-05d6-4395-b8db-6d827bf7455e"],
+Cell[3377, 97, 485, 14, 52, "Input",ExpressionUUID->"8abc0562-f94f-40a2-9cba-aa8c24ef6db6"],
+Cell[3865, 113, 584, 15, 52, "Input",ExpressionUUID->"2864b469-dec0-4442-ad39-95ea65eb9e49"],
+Cell[4452, 130, 2092, 53, 115, "Input",ExpressionUUID->"afb4f082-8bc6-42aa-968a-507ceb8abe2d"],
+Cell[6547, 185, 741, 20, 53, "Input",ExpressionUUID->"82f5e3df-8bd0-40d7-9d59-c683b0a8cce1"],
+Cell[7291, 207, 1761, 49, 73, "Input",ExpressionUUID->"bc36aac6-b5b7-42f6-a9a0-e9bfe2416ecb"],
+Cell[9055, 258, 15769, 358, 934, "Input",ExpressionUUID->"fdc1b6ba-8e2a-4627-94be-731a7eeb4de2"],
+Cell[24827, 618, 2981, 73, 136, "Input",ExpressionUUID->"3a79c162-9609-472e-902f-d377ff338c6c"],
+Cell[27811, 693, 7578, 164, 472, "Input",ExpressionUUID->"237d1f94-5edb-4e25-87c1-3a6d4f8f695e"],
+Cell[35392, 859, 6889, 157, 325, "Input",ExpressionUUID->"0499c0fc-92e9-4b9d-b5e6-b60ebe76f7ad"],
+Cell[42284, 1018, 1893, 41, 157, "Input",ExpressionUUID->"cd8cb228-7a0f-409d-acc9-64e460dcf512"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[44214, 1064, 157, 3, 67, "Section",ExpressionUUID->"67853cb1-76db-4417-880d-e64c3e89a540"],
+Cell[CellGroupData[{
+Cell[44396, 1071, 1006, 22, 73, "Input",ExpressionUUID->"af08de51-39a8-4339-a35b-6c8d08e720ea"],
+Cell[CellGroupData[{
+Cell[45427, 1097, 1386, 21, 24, "Print",ExpressionUUID->"64f17000-472d-4e21-ba41-517bc008eff7"],
+Cell[46816, 1120, 1555, 26, 24, "Print",ExpressionUUID->"6568de7a-4395-469f-a6bf-0043a53a2eba"],
+Cell[48374, 1148, 1582, 26, 24, "Print",ExpressionUUID->"e9233c62-3b46-418d-8e25-a75da6bc634d"],
+Cell[49959, 1176, 8931, 155, 421, "Print",ExpressionUUID->"04980a38-0cfb-4b3b-9d59-ea94ac9873b6"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[58939, 1337, 270, 5, 30, "Input",ExpressionUUID->"d20a69b3-fa32-4564-9d32-0f897486e188"],
+Cell[59212, 1344, 11741, 194, 430, "Output",ExpressionUUID->"84be6f29-0a12-4469-b6e4-cbad9272bbf4"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[70990, 1543, 599, 15, 73, "Input",ExpressionUUID->"c5e5f6ad-8000-458e-9270-32d690d7c097"],
+Cell[CellGroupData[{
+Cell[71614, 1562, 436, 7, 24, "Print",ExpressionUUID->"1f353cd0-058b-44f3-b090-9c1b2c334c47"],
+Cell[72053, 1571, 616, 12, 24, "Print",ExpressionUUID->"9011555e-7297-4403-9bcf-d6ba6fd7ac27"],
+Cell[72672, 1585, 634, 12, 24, "Print",ExpressionUUID->"89a0dafb-b6f0-4d67-966f-28c8e44e61c3"],
+Cell[73309, 1599, 13917, 239, 483, "Print",ExpressionUUID->"cf7b580f-d587-44ea-b6a6-1a8b2abb2c79"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[87275, 1844, 280, 6, 30, "Input",ExpressionUUID->"260a8472-3d3f-4ffd-bde9-0260dc0ace0a"],
+Cell[CellGroupData[{
+Cell[87580, 1854, 209, 4, 24, "Print",ExpressionUUID->"ea642adf-6f48-468c-9d2b-64dfc731df4d"],
+Cell[87792, 1860, 431, 11, 24, "Print",ExpressionUUID->"0f4f7497-eba3-4ce3-8c5c-9cc32fb20ece"],
+Cell[88226, 1873, 404, 9, 24, "Print",ExpressionUUID->"39f2561d-fdd1-476a-9ca4-2202ed64dbf4"],
+Cell[88633, 1884, 3965, 77, 285, "Print",ExpressionUUID->"dca93104-c340-4eb0-a326-637afb317e89"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
